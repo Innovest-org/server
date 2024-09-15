@@ -1,0 +1,14 @@
+{
+  "env": {
+    "node": true,   // To enable Node.js global variables like `require` and `module`
+    "es2021": true  // To enable ES2021 syntax
+  },
+  "extends": ["eslint:recommended", "prettier"],
+  "parserOptions": {
+    "ecmaVersion": 12  // For ES12/2021 support
+  },
+  "rules": {
+    "no-unused-vars": "warn",  // To show a warning instead of an error for unused variables
+    "no-undef": "off"          // Disable the `no-undef` rule for Node.js globals
+  }
+}
