@@ -1,6 +1,7 @@
 const User = require('../db/models/userModel');
-const UserDTO = require('../common/dtos/UserDTO');
-
+const { CreateUserDTO } = require('../common/dtos/userDTO/createUser.dto');
+const { createUserValidationSchema } = require('../db/validators/userValidations/createUser.validator');
+const { UserDTO } = require('../common/dtos/userDTO/user.dto');
 /**
  * Creates a new user.
  * @param {Object} userData - The data for the new user.
@@ -12,10 +13,20 @@ const UserDTO = require('../common/dtos/UserDTO');
  */
 const createUser = async (userData) => {
   try {
+    const { error } = createUserValidationSchema.validate(userData);
+    if (error) {
+      throw new Error(`Validation Error: ${error.details.map(x => x.message).join(', ')}`);
+    }
+
     const user = new User(userData);
+
     await user.save();
-    return new UserDTO(user);
+
+    const userObject = user.toObject();
+    console.log('User object:', user.toObject());
+    return new CreateUserDTO(userObject);
   } catch (error) {
+    console.error('Error creating user:', error.message);
     throw new Error('Error creating user');
   }
 };
@@ -43,8 +54,12 @@ const getUserByUsername = async (username) => {
  * @returns {Promise<UserDTO[]>} An array of all users as UserDTO objects.
  */
 const getAllUsers = async () => {
-  const users = await User.find({});
-  return users.map(user => new UserDTO(user));
+  try {
+    const users = await User.find({}).exec();
+    return users.map(user => new UserDTO(user));
+  } catch (error) {
+    throw new Error('Error fetching users');
+  }
 };
 
 module.exports = { createUser, getUserByUsername, getAllUsers };
