@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
 const interestSchema = new mongoose.Schema({
-  interestId: { type: mongoose.Schema.Types.ObjectId, auto: true },
+  id: { type: String, default: uuidv4, unique: true },
+
   name: { type: String, required: true },
   users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 }, { timestamps: true });
