@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const { v4: uuidv4 } = require('uuid');
 
 const feedbackSchema = new mongoose.Schema({
   id: { type: String, default: uuidv4, unique: true },
+
   rate: { type: Number, min: 0, max: 5, required: false },
   content: { type: String, required: true },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
