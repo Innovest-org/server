@@ -23,6 +23,9 @@ const userSchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
 
   interests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Interest',  required: false }],
+  feedbacks: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Feedback' }],
+  //TODO
+  //projects, investments, ...
 }, { timestamps: true }); // Automatically adds createdAt and updatedAt fields
 
 const User = mongoose.model('User', userSchema);
