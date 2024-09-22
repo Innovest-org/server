@@ -4,8 +4,8 @@ class CreateInterestDTO {
     this.name = interest.name;
     this.admin_id = interest.admin_id;
     this.users = interest.users || [];
-    this.createdAt = interest.createdAt;
-    this.updatedAt = interest.updatedAt;
+    this.created_at = interest.created_at;
+    this.updated_at = interest.updated_at;
   }
 
   validate() {
@@ -19,7 +19,7 @@ class UpdateInterestDTO {
     this.name = interest.name || null;
     this.admin_id = interest.admin_id || null;
     this.users = interest.users || [];
-    this.updatedAt = interest.updatedAt || null;
+    this.updated_at = interest.updated_at || null;
   }
 
   validate() {

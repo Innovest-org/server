@@ -13,23 +13,35 @@ const userSchema = new Schema(
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    phone: { type: String },
+    phone: {
+      type: String,
+      validate: {
+        validator: function (v) {
+          return /\d{10}/.test(v);
+        },
+        message: (props) => `${props.value} is not a valid phone number!`,
+      },
+    },    
     role: {
       type: String,
       enum: ['ENTREPRENEUR', 'INVESTOR', 'ADMIN'],
       default: 'ENTREPRENEUR',
     },
     country: { type: String, required: true },
-    userBackground: { type: String },
+    user_background: { type: String },
     experience: { type: String },
     investment_preferences: [{ type: String }],
-    idNationality: { type: Number },
+    id_nationality: {
+      type: Number,
+      min: [1, 'Nationality ID should be positive'],
+    },    
+    id_document: { type: String},
     profile_image: {
       type: String,
       default: 'https://i.ibb.co/6WtQfMm/default.png',
     },
     is_verified: { type: Boolean, default: false },
-    is_active: { type: Boolean, default: true },
+    is_active: { type: Boolean, default: false },
 
     // Feedback relationships
     feedback_maker: [{ type: Schema.Types.ObjectId, ref: 'Feedback' }],
@@ -40,6 +52,9 @@ const userSchema = new Schema(
     languages: [{ type: Schema.Types.ObjectId, ref: 'Languages' }],
     user_interests: [{ type: Schema.Types.ObjectId, ref: 'UserInterests' }],
     interests: [{ type: Schema.Types.ObjectId, ref: 'Interest' }],
+    last_login: { type: Date },
+
+    // Communities
     //user_communities: [{ type: Schema.Types.ObjectId, ref: 'CommunityUsers' }],
     //communities: [{ type: Schema.Types.ObjectId, ref: 'Community' }],
 
