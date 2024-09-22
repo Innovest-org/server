@@ -34,10 +34,10 @@ describe('User Model Test', () => {
       password: 'password123',
       phone: '1234567890',
       country: 'USA',
-      userBackground: 'Software Developer',
+      user_background: 'Software Developer',
       experience: '5 years',
       investment_preferences: ['Tech', 'Healthcare'],
-      idNationality: 1,
+      id_nationality: 1,
     });
 
     const savedUser = await validUser.save();
@@ -51,10 +51,10 @@ describe('User Model Test', () => {
     expect(savedUser.last_name).toBe(validUser.last_name);
     expect(savedUser.username).toBe(validUser.username);
     expect(savedUser.email).toBe(validUser.email);
-    expect(savedUser.userBackground).toBe(validUser.userBackground);
+    expect(savedUser.user_background).toBe(validUser.user_background);
     expect(savedUser.experience).toBe(validUser.experience);
     expect(savedUser.investment_preferences).toEqual(validUser.investment_preferences);
-    expect(savedUser.idNationality).toBe(validUser.idNationality);
+    expect(savedUser.id_nationality).toBe(validUser.id_nationality);
   });
 
   it('should not save a user with a duplicate email', async () => {
@@ -66,10 +66,10 @@ describe('User Model Test', () => {
       password: 'password123',
       phone: '1234567890',
       country: 'USA',
-      userBackground: 'Software Developer',
+      user_background: 'Software Developer',
       experience: '5 years',
       investment_preferences: ['Tech', 'Healthcare'],
-      idNationality: 1,
+      id_nationality: 1,
     });
 
     const user2 = new User({
@@ -80,10 +80,10 @@ describe('User Model Test', () => {
       password: 'password123',
       phone: '1234567890',
       country: 'USA',
-      userBackground: 'Data Scientist',
+      user_background: 'Data Scientist',
       experience: '3 years',
       investment_preferences: ['Finance'],
-      idNationality: 2,
+      id_nationality: 2,
     });
 
     await user1.save();
