@@ -47,7 +47,6 @@ describe('User Model Test', () => {
     expect(savedUser.created_at).toBeDefined();
     expect(savedUser.updated_at).toBeDefined();
 
-    // Ensure the rest of the fields are saved correctly
     expect(savedUser.first_name).toBe(validUser.first_name);
     expect(savedUser.last_name).toBe(validUser.last_name);
     expect(savedUser.username).toBe(validUser.username);
