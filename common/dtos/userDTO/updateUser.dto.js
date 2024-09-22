@@ -1,19 +1,23 @@
 class UpdateUserDTO {
   constructor(user) {
-    this.id = user._id;
+    this.id = user.id; 
     this.username = user.username || null;
+    this.firstName = user.first_name || null; 
+    this.lastName = user.last_name || null; 
     this.email = user.email || null;
-    this.firstName = user.firstName || null;
-    this.lastName = user.lastName || null;
+    this.password = user.password || null;
     this.phone = user.phone || null;
     this.country = user.country || null;
+    this.userBackground = user.userBackground || null;
+    this.experience = user.experience || null;
+    this.investmentPreferences = user.investment_preferences || [];
+    this.idNationality = user.idNationality || null;
+    this.profileImage = user.profile_image || null; 
+    this.isVerified = user.is_verified !== undefined ? user.is_verified : null; 
+    this.isActive = user.is_active !== undefined ? user.is_active : null; 
+    this.updatedAt = user.updated_at || null; 
     this.languages = user.languages || [];
-    this.profileImage = user.profileImage || null;
-    this.socialLinks = user.socialLinks || [];
-    this.role = user.role || null;
-    this.isVerified = user.isVerified !== undefined ? user.isVerified : null;
-    this.isActive = user.isActive !== undefined ? user.isActive : null;
-    this.updatedAt = user.updatedAt || null;
+    this.interests = user.interests || [];
   }
 
   validate() {

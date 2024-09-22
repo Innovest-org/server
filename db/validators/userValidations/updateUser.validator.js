@@ -1,21 +1,23 @@
 const Joi = require('joi');
 
 const updateUserValidationSchema = Joi.object({
-  createdAt: Joi.date().forbidden(), // Creation date should not be updated
-  updatedAt: Joi.date().default(() => new Date(), 'current date').optional(),
-  firstName: Joi.string().max(30).optional(),
-  lastName: Joi.string().max(30).optional(),
-  userName: Joi.string().max(50).optional(),
+  first_name: Joi.string().max(30).optional(),
+  last_name: Joi.string().max(30).optional(),
+  username: Joi.string().max(50).optional(),
   email: Joi.string().email().optional(),
-  password: Joi.string().optional(),
+  password: Joi.string().min(6).optional(),
   phone: Joi.string().max(15).optional(),
+  role: Joi.string().valid('ENTREPRENEUR', 'INVESTOR', 'ADMIN').optional(),
   country: Joi.string().optional(),
-  languages: Joi.array().items(Joi.string()).optional(),
-  profileImage: Joi.string().uri().optional(),
-  socialLinks: Joi.array().items(Joi.string().uri()).optional(),
-  role: Joi.string().valid('ENTREPRENEUR', 'INVESTOR', 'MENTOR', 'ADMIN').optional(),
-  isVerified: Joi.boolean().optional(),
-  isActive: Joi.boolean().optional(),
+  userBackground: Joi.string().optional(),
+  experience: Joi.string().optional(),
+  idNationality: Joi.number().optional(),
+  profile_image: Joi.string().uri().optional(),
+  is_verified: Joi.boolean().optional(),
+  is_active: Joi.boolean().optional(),
+  investment_preferences: Joi.array().items(Joi.string()).optional(),
+  user_languages: Joi.array().items(Joi.string()).optional(),
+  user_interests: Joi.array().items(Joi.string()).optional(),
 });
 
 module.exports = { updateUserValidationSchema };

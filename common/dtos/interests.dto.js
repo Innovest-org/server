@@ -1,8 +1,9 @@
 class CreateInterestDTO {
   constructor(interest) {
-    this.id = interest._id;
+    this.id = interest.id;
     this.name = interest.name;
-    this.users = interest.users || []; // Array of user IDs
+    this.admin_id = interest.admin_id;
+    this.users = interest.users || [];
     this.createdAt = interest.createdAt;
     this.updatedAt = interest.updatedAt;
   }
@@ -16,6 +17,7 @@ class UpdateInterestDTO {
   constructor(interest) {
     this.id = interest._id;
     this.name = interest.name || null;
+    this.admin_id = interest.admin_id || null;
     this.users = interest.users || [];
     this.updatedAt = interest.updatedAt || null;
   }
