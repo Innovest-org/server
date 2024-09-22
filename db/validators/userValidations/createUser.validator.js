@@ -1,21 +1,23 @@
 const Joi = require('joi');
 
 const createUserValidationSchema = Joi.object({
-  createdAt: Joi.date().default(() => new Date()),
-  updatedAt: Joi.date().default(() => new Date()),
-  firstName: Joi.string().max(30).required(),
-  lastName: Joi.string().max(30).required(),
-  userName: Joi.string().max(50).required(),
+  first_name: Joi.string().max(30).required(),
+  last_name: Joi.string().max(30).required(),
+  username: Joi.string().max(50).required(),
   email: Joi.string().email().required(),
-  password: Joi.string().required(),
+  password: Joi.string().min(8).required(),
   phone: Joi.string().max(15).optional(),
+  role: Joi.string().valid('ENTREPRENEUR', 'INVESTOR', 'ADMIN').default('ENTREPRENEUR'),
   country: Joi.string().required(),
-  languages: Joi.array().items(Joi.string()).optional(),
-  profileImage: Joi.string().uri().default('https://i.ibb.co/6WtQfMm/default.png'),
-  socialLinks: Joi.array().items(Joi.string().uri()).optional(),
-  role: Joi.string().valid('ENTREPRENEUR', 'INVESTOR', 'MENTOR', 'ADMIN').default('ENTREPRENEUR'),
-  isVerified: Joi.boolean().default(true),
-  isActive: Joi.boolean().default(true),
+  userBackground: Joi.string().optional(),
+  experience: Joi.string().optional(),
+  idNationality: Joi.number().optional(),
+  profile_image: Joi.string().uri().default('https://i.ibb.co/6WtQfMm/default.png'),
+  is_verified: Joi.boolean().default(false),
+  is_active: Joi.boolean().default(true),
+  investment_preferences: Joi.array().items(Joi.string()).optional(),
+  user_languages: Joi.array().items(Joi.string()).optional(),
+  user_interests: Joi.array().items(Joi.string()).optional(), 
 });
 
 module.exports = { createUserValidationSchema };
