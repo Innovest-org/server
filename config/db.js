@@ -3,6 +3,7 @@ require("dotenv").config();
 
 async function dbConection() {
   try {
+
     await mongoose.connect('mongodb://localhost:27017/Innovest'); // No need for deprecated options anymore
     console.log("MongoDB connected successfully");
   } catch (error) {
@@ -13,3 +14,6 @@ async function dbConection() {
 module.exports = {
   dbConection,
 };
+
+
+
