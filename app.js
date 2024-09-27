@@ -4,6 +4,7 @@ const cors = require("cors");
 const userModule = require('./modules/userModule');
 const { dbConection } = require("./config/db");
 
+
 dotenv.config();
 const app = express();
 
@@ -22,3 +23,6 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () =>
   console.log(`server running in ${process.env.NODE_ENV} mode on port ${PORT}`),
 );
+
+
+
