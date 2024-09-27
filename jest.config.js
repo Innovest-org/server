@@ -6,6 +6,6 @@ module.exports = {
 
 module.exports = {
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['../server/tests/notification.test.js'],
+  setupFilesAfterEnv: ['../server/tests/project.test.js'],
 };
 
