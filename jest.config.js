@@ -9,7 +9,8 @@ module.exports = {
 
 module.exports = {
   testEnvironment: 'node',
-  setupFilesAfterEnv: ['../server/tests/comment.test.js'],
+  setupFilesAfterEnv: ['../server/tests/comment.test.js' ,
+                      '../server/tests/investment.test.js'],
 };
 
 
