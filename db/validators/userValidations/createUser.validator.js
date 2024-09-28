@@ -8,7 +8,7 @@ const createUserValidationSchema = Joi.object({
   password: Joi.string().min(8).required(),
   phone: Joi.string().max(15).optional(),
   role: Joi.string().valid('ENTREPRENEUR', 'INVESTOR', 'ADMIN').default('ENTREPRENEUR'),
-  country: Joi.string().required(),
+  country: Joi.string().optional(),
   user_background: Joi.string().optional(),
   experience: Joi.string().optional(),
   id_nationality: Joi.number().optional(),
