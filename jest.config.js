@@ -13,9 +13,8 @@ module.exports = {
                       '../server/tests/investment.test.js' ,
                        '../server/tests/community.test.js' ,
                       '../server/tests/communityUsers.test.js' ,
-                      '../server/tests/messages.test.js'],
-
-
+                      '../server/tests/messages.test.js' ,
+                      '../server/tests/project.test.js'],
 };
 
 
