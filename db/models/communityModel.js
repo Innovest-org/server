@@ -13,10 +13,9 @@ const CommunitySchema = new mongoose .Schema({
    image:{type:String , required:false}, //optional field
 
 
-   admin_id:{type:mongoose.Schema.Types.ObjectId, ref:"User", required :true},    //forigen key Reference to admin User
+   admins: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Admin' }],
    users: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CommunityUsers'  }],  // Reference to CommunityUsers
    pages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'CommunityPages'  }]   // Reference to CommunityPages
-  
 });
 
 
