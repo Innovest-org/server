@@ -88,9 +88,10 @@ class UserDao {
   async getUserByUsername(username) {
     try {
       return await Admin.findOne({ username : username});
-    }catch (error) {
+    } catch (error) {
       throw new Error('Error fetching user: ' + error.message);
-    
+    }
+  }
   /**
    * Checks if a user is an admin
    * @param {string} admin_id - The unique identifier of the admin
