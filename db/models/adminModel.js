@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const { v4: uuidv4 } = require('uuid');
 
 const permissionsEnum = [
   'CREATE_USER',
@@ -12,6 +13,7 @@ const permissionsEnum = [
 
 const adminSchema = new Schema(
   {
+    admin_id: { type: String, default: uuidv4, unique: true },
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },
     username: { type: String, required: true, unique: true },
@@ -20,6 +22,11 @@ const adminSchema = new Schema(
     profile_image: {
       type: String,
       default: 'https://res.cloudinary.com/djvjxp2am/image/upload/v1628684396/avatars/avatar-1_ymq8zg.png',
+    },
+    admin_state: {
+      type: String,
+      enum: ['APPROVER', 'REJECTOR'],
+      default: 'APPROVER',
     },
     role: {
       type: String,
@@ -32,22 +39,11 @@ const adminSchema = new Schema(
       default: [],
       required: true,
     },
-    communities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Community' }]
+    approved_pages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Page' }],
+    communities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Community' }],
   },
   { timestamps: true },
 );
 
-const adminCommunitySchema = new mongoose.Schema({
-  admin: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' }, // Reference to the admin
-  community: { type: mongoose.Schema.Types.ObjectId, ref: 'Community' }, // Reference to the community
-  role: { type: String, enum: ['MANAGER', 'MODERATOR'], default: 'MANAGER' }, // Optional role within the community
-  createdAt: { type: Date, default: Date.now } // Timestamp for when the relationship was created
-});
-
 const Admin = mongoose.model('Admin', adminSchema);
-const AdminCommunity = mongoose.model('AdminCommunity', adminCommunitySchema);
-
-module.exports = {
-  Admin,
-  AdminCommunity
-};
+module.exports = Admin;

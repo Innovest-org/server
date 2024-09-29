@@ -76,6 +76,24 @@ class UserDao {
       throw new Error('Error fetching user: ' + error.message);
     }
   }
+  /**
+   * Checks if a user is an admin
+   * @param {string} admin_id - The unique identifier of the admin
+   * @returns {Promise<boolean>} - Returns true if the user is an admin, false otherwise
+   * @throws {Error} - If the admin cannot be found or there's an error querying the database
+   */
+  async isAdmin(admin_id) {
+    try {
+      const admin = await Admin.findById(admin_id);
+      if (admin && admin.role === 'ADMIN') {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      throw new Error('Unable to verify admin status');
+    }
+  }
 }
 
 module.exports = new UserDao();
