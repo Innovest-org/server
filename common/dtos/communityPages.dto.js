@@ -1,27 +1,35 @@
-class CommunityPagesDTO {
-    constructor(community_name, created_at, updated_at, visibility, page_id) {
-        this.community_name = community_name; // Unique identifier for the community page
-        this.created_at = created_at;         // Timestamp when the page was created
-        this.updated_at = updated_at;         // Timestamp when the page was last updated
-        this.visibility = visibility;         // Determines if the page is visible
-        this.page_id = page_id;               // Reference to the Page object
-    }
+class CreateCommunityPagesDTO {
+  constructor(data) {
+    this.community_name = data.community_name;
+    this.page_id = data.page_id;
+    this.admin = data.admin;
+    this.visibility = data.visibility !== undefined ? data.visibility : true;
+  }
 
-    validate() {
-        if (!this.community_name) throw new Error('Interest name is required');
-      }
+  validate() {
+    if (!this.community_name) throw new Error('Community name is required');
+    if (!this.page_id) throw new Error('Page ID is required');
+  }
 }
 
+module.exports = CreateCommunityPagesDTO;
 
 class UpdateCommunityPagesDTO {
-    constructor(community_name, visibility, page_id) {
-        this.community_name = community_name; // Optional: Unique identifier for the community page (can be updated)
-        this.visibility = visibility;         // Optional: Determines if the page is visible
-        this.page_id = page_id;               // Optional: Reference to the Page object (can be updated)
-    }
-    validate() {
-        if (!this.community_name) throw new Error('Interest name is required for update'); 
-      }
+  constructor(data) {
+    this.community_name = data.community_name;
+    this.page_id = data.page_id; /*  */
+    this.admin = data.admin;
+    this.visibility = data.visibility;
+  }
+
+  validate() {
+    if (this.community_name && typeof this.community_name !== 'string')
+      throw new Error('Invalid community name');
+    if (this.page_id && typeof this.page_id !== 'string')
+      throw new Error('Invalid page ID');
+    if (this.visibility !== undefined && typeof this.visibility !== 'boolean')
+      throw new Error('Invalid visibility');
+  }
 }
 
-module.exports = { CommunityPagesDTO, UpdateCommunityPagesDTO };
+module.exports = UpdateCommunityPagesDTO;

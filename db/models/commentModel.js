@@ -9,8 +9,6 @@ const commentSchema = new mongoose .Schema({
 
     user_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' , required: true  }],  // Reference to User
     post_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'post' , required: true  }],  // Reference to post
-   
-
 });
 
 
