@@ -24,10 +24,10 @@ const userSchema = new Schema(
     },    
     role: {
       type: String,
-      enum: ['ENTREPRENEUR', 'INVESTOR', 'ADMIN'],
+      enum: ['ENTREPRENEUR', 'INVESTOR'],
       default: 'ENTREPRENEUR',
     },
-    country: { type: String, required: true },
+    country: { type: String, required: false },
     user_background: { type: String },
     experience: { type: String },
     investment_preferences: [{ type: String }],
@@ -55,16 +55,16 @@ const userSchema = new Schema(
     last_login: { type: Date },
 
     // Communities
-    //user_communities: [{ type: Schema.Types.ObjectId, ref: 'CommunityUsers' }],
-    //communities: [{ type: Schema.Types.ObjectId, ref: 'Community' }],
+    user_communities: [{ type: Schema.Types.ObjectId, ref: 'CommunityUsers' }],
+    communities: [{ type: Schema.Types.ObjectId, ref: 'Community' }],
 
     // Projects and Investments
-    //projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
-    //investments: [{ type: Schema.Types.ObjectId, ref: 'Investment' }],
+    projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
+    investments: [{ type: Schema.Types.ObjectId, ref: 'Investment' }],
 
     // Messages
-    //messages_sent: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
-    //messages_received: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
+    messages_sent: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
+    messages_received: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
