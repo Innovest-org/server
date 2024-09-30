@@ -1,4 +1,4 @@
-const Admin = require('../../db/models/adminModel');
+const {Admin} = require('../../db/models/adminModel');
 
 /**
  * UserDao class provides methods for interacting with admin user data.
@@ -73,6 +73,24 @@ class UserDao {
     try {
       return await Admin.findById(id);
     } catch (error) {
+      throw new Error('Error fetching user: ' + error.message);
+    }
+  }
+
+
+  
+  async getUserByEmail(email) {
+    try {
+      return await Admin.findOne({ email : email });
+    }catch (error) {
+      throw new Error('Error fetching user: ' + error.message);
+    }
+  }
+
+  async getUserByUsername(username) {
+    try {
+      return await Admin.findOne({ username : username});
+    }catch (error) {
       throw new Error('Error fetching user: ' + error.message);
     }
   }
