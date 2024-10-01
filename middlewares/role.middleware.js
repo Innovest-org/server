@@ -4,17 +4,24 @@ const Admin = require('../db/models/adminModel');
 const checkRole = (roles) => {
     return async (req, res, next) => {
         try {
-            const userId = req.user.id;
-            let user;
-
-            // Check if the user is an admin or a regular user
-            if (req.user.role === 'ADMIN' || req.user.role === 'SUPER_ADMIN') {
-                user = await Admin.findOne({ admin_id: userId });
-            } else {
-                user = await User.findById(userId);
+            if (!req.user) {
+                return res.status(401).json({ message: 'Unauthorized: No user found' });
             }
 
-            // Check if the user has the required role
+            const userId = req.user.id;
+            console.log('User ID:', userId,)
+            let user;
+            if (req.user.role === 'ADMIN' || req.user.role === 'SUPER_ADMIN') {
+                user = await Admin.findOne({ admin_id: userId });
+                if (!user) {
+                    console.log('User not found in Admin collection');
+                }
+            } else {
+                user = await User.findById(userId);
+                if (!user) {
+                    console.log('User not found in User collection');
+                }
+            }
             if (!user || !roles.includes(user.role)) {
                 return res.status(403).json({ message: 'Access denied: insufficient permissions.' });
             }

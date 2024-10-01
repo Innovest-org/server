@@ -4,7 +4,6 @@ const adminValidationSchema = Joi.object({
     first_name: Joi.string()
         .min(2)
         .max(30)
-        .required()
         .messages({
             'string.base': `"first_name" should be a type of 'text'`,
             'string.empty': `"first_name" cannot be an empty field`,
@@ -15,7 +14,6 @@ const adminValidationSchema = Joi.object({
     last_name: Joi.string()
         .min(2)
         .max(30)
-        .required()
         .messages({
             'string.base': `"last_name" should be a type of 'text'`,
             'string.empty': `"last_name" cannot be an empty field`,

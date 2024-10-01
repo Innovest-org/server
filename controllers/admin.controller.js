@@ -38,7 +38,10 @@ class AdminController {
     try {
       const updatedAdmin = await AdminService.updateAdmin(req.params.id, req.body);
       if (!updatedAdmin) return res.status(404).json({ message: 'Admin not found' });
-      res.status(200).json(updatedAdmin);
+      res.status(200).json({
+        message: 'Admin updated',
+        admin: updatedAdmin,
+      });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
