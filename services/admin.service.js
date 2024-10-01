@@ -1,3 +1,4 @@
+const UserDao = ('../common/daos/user.dao');
 /**
  * AdminServices class provides methods for managing admin users.
  * It interacts with the UserDao to perform CRUD operations on admin data.
