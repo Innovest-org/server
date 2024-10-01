@@ -1,20 +1,39 @@
 const express = require('express');
-const AdminController  = require('../controllers/admin.controller');
-const roleMiddleware = require('../middlewares/role.middleware');
-const AdminAuthController = require('../controllers/auth.controller');
+const AdminController = require('../controllers/admin.controller');
+const checkRole = require('../middlewares/role.middleware');
+const AdminAuthController = require('../controllers/admin_auth.controller');
 const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
 const AuthMiddleware = require('../middlewares/auth.middleware');
+const { checkOwnership } = require('../middlewares/checkOwnership.middleware');
+const Admin = require('../db/models/adminModel');
 const router = express.Router();
 
-//don't forget to add middlewares after auth finished 
-router.post('/', AuthMiddleware() ,  AdminController.create);
-router.put('/:id', AdminController.update);
-router.delete('/:id', roleMiddleware(['SUPER_ADMIN']), AdminController.delete);
-router.get('/', AdminController.list);
-router.get('/:id', AdminController.getById);
+// Auth Endpoints
+router.post('/register', AdminAuthController.register);
 router.post('/login', AdminAuthController.login);
+router.get('/logout', AdminAuthController.logout);
 
-// will be deleted 
-//router.get('/test', AuthController.test);
+// Admin Management Operations
+router.post('/', AuthMiddleware(), checkRole(['SUPER_ADMIN']),  AdminController.create);
+router.put('/:id',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  checkOwnership(Admin, 'admin_id'),
+  checkPermissions(['UPDATE_USER_OR_ADMIN']),
+  AdminController.update);
+router.delete('/:id',
+  AuthMiddleware(), 
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  checkOwnership(Admin, 'admin_id'),
+  checkPermissions(['DELETE_USER_OR_ADMIN']),
+  AdminController.delete);
+router.get('/',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  AdminController.list);
+router.get('/:id',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', 'ADMIN']),
+  AdminController.getById);
 
 module.exports = router;

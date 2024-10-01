@@ -1,21 +1,20 @@
 const Admin = require('../../db/models/adminModel');
 
 /**
- * UserDao class provides methods for interacting with admin user data.
+ * adminDao class provides methods for interacting with admin user data.
  * It performs CRUD operations and handles interactions with the Admin model.
  */
-class UserDao {
+class AdminDao {
   /**
    * Creates a new user with the given data.
    * @param {Object} userData - The user data to be stored in the database.
    * @returns {Promise<Admin>} - The newly created user.
    * @throws {Error} If the user couldn't be created.
    */
-  async createUser(userData) {
+  async createAdmin(userData) {
     try {
       const user = new Admin(userData);
-      await user.save();
-      return user;
+      return await user.save();
     } catch (error) {
       throw new Error('Error creating user: ' + error.message);
     }
@@ -28,13 +27,24 @@ class UserDao {
    * @returns {Promise<Admin>} - The updated user.
    * @throws {Error} If the user couldn't be updated.
    */
-  async updateUser(id, userData) {
+  async  updateAdmin(adminId, updateData) {
     try {
-      return await Admin.findByIdAndUpdate(id, userData, { new: true });
+        const updatedAdmin = await Admin.findOneAndUpdate(
+            { admin_id: adminId }, 
+            updateData,
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedAdmin) {
+            throw new Error('Admin not found');
+        }
+
+        return updatedAdmin;
     } catch (error) {
-      throw new Error('Error updating user: ' + error.message);
+        throw new Error('Error updating admin: ' + error.message);
     }
-  }
+}
+
 
   /**
    * Deletes the user with the given id.
@@ -42,9 +52,13 @@ class UserDao {
    * @returns {Promise<Admin>} - The deleted user.
    * @throws {Error} If the user couldn't be deleted.
    */
-  async deleteUser(id) {
+  async deleteAdmin(adminId) {
     try {
-      return await Admin.findByIdAndDelete(id);
+      const deletedAdmin = await Admin.findOneAndDelete({ admin_id: adminId });
+      if (!deletedAdmin) {
+        throw new Error('Admin not found');
+      }
+      return deletedAdmin;
     } catch (error) {
       throw new Error('Error deleting user: ' + error.message);
     }
@@ -55,7 +69,7 @@ class UserDao {
    * @returns {Promise<Admin[]>} - A list of all users with the roles 'ADMIN' or 'SUPER_ADMIN'.
    * @throws {Error} If the users couldn't be fetched.
    */
-  async getAllUsers() {
+  async getAllAdmins() {
     try {
       return await Admin.find({ role: { $in: ['ADMIN', 'SUPER_ADMIN'] } });
     } catch (error) {
@@ -69,9 +83,9 @@ class UserDao {
    * @returns {Promise<Admin>} - The user with the given id.
    * @throws {Error} If the user couldn't be fetched.
    */
-  async getUserByID(id) {
+  async getAdminByID(adminId) {
     try {
-      return await Admin.findById(id);
+      return await Admin.findOne({ admin_id: adminId });
     } catch (error) {
       throw new Error('Error fetching user: ' + error.message);
     }
@@ -83,7 +97,7 @@ class UserDao {
    * @returns {Promise<Admin>} - The user with the given email.
    * @throws {Error} If the user couldn't be fetched.
    */
-  async getUserByEmail(email) {
+  async getAdminByEmail(email) {
     try {
       return await Admin.findOne({ email : email });
     }catch (error) {
@@ -97,7 +111,7 @@ class UserDao {
    * @returns {Promise<Admin>} - The user with the given username.
    * @throws {Error} If the user couldn't be fetched.
    */
-  async getUserByUsername(username) {
+  async getAdminByUsername(username) {
     try {
       return await Admin.findOne({ username : username});
     } catch (error) {
@@ -110,10 +124,10 @@ class UserDao {
    * @returns {Promise<boolean>} - Returns true if the user is an admin, false otherwise
    * @throws {Error} - If the admin cannot be found or there's an error querying the database
    */
-  async isAdmin(admin_id) {
+  async isAdmin(adminId) {
     try {
-      const admin = await Admin.findById(admin_id);
-      if (admin && admin.role === 'ADMIN') {
+      const admin = await Admin.findById({admin_id: adminId});
+      if (admin && admin.role === 'SUPER_ADMIN' || admin.role === 'SUPER_ADMIN') {
         return true;
       }
       return false;
@@ -124,4 +138,4 @@ class UserDao {
   }
 }
 
-module.exports = new UserDao();
+module.exports = new AdminDao();

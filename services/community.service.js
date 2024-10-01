@@ -1,5 +1,5 @@
 const CommunityDAO = require('../common/daos/community.dao');
-const userDao = require('../common/daos/user.dao');
+const adminDao = require('../common/daos/admin.dao');
 
 class CommunityServices {
   /**
@@ -12,7 +12,7 @@ class CommunityServices {
   async createCommunity(admin_id, communityData) {
     
     try {
-      const isAdmin = await userDao.isAdmin(admin_id);
+      const isAdmin = await adminDao.isAdmin(admin_id);
     if (!isAdmin) {
       throw new Error("Only admins can create a community");
     }
@@ -33,7 +33,7 @@ class CommunityServices {
    * @throws {Error} - If an error occurs while updating the community
    */
   async updateCommunity(communityName, admin_id, communityData) {
-    const isAdmin = await userDao.isAdmin(admin_id);
+    const isAdmin = await adminDao.isAdmin(admin_id);
     if (!isAdmin) {
       throw new Error("Only admins can update a community");
     }
@@ -55,7 +55,7 @@ class CommunityServices {
    * @throws {Error} - If an error occurs while deleting the community or if the admin is not authorized to delete the community
    */
   async deleteCommunity(communityName, admin_id) {
-    const isAdmin = await userDao.isAdmin(admin_id);
+    const isAdmin = await adminDao.isAdmin(admin_id);
     if (!isAdmin) {
       throw new Error("Only admins can delete a community");
     }
