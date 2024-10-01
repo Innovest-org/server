@@ -1,10 +1,9 @@
-const UserDao = ('../common/daos/user.dao');
+const UserDao = require('../common/daos/user.dao');
+const bycrypt = require('bcryptjs');
 /**
  * AdminServices class provides methods for managing admin users.
  * It interacts with the UserDao to perform CRUD operations on admin data.
  */
-const UserDao = require('../common/daos/user.dao');
-const bycrypt = require('bcryptjs');
 class AdminServices {
   
   /**

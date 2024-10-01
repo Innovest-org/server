@@ -77,6 +77,12 @@ class UserDao {
     }
   }
   
+  /**
+   * Retrieves the user with the given email.
+   * @param {string} email - The email of the user to be retrieved.
+   * @returns {Promise<Admin>} - The user with the given email.
+   * @throws {Error} If the user couldn't be fetched.
+   */
   async getUserByEmail(email) {
     try {
       return await Admin.findOne({ email : email });
@@ -85,12 +91,19 @@ class UserDao {
     }
   }
 
+  /**
+   * Retrieves the user with the given username.
+   * @param {string} username - The username of the user to be retrieved.
+   * @returns {Promise<Admin>} - The user with the given username.
+   * @throws {Error} If the user couldn't be fetched.
+   */
   async getUserByUsername(username) {
     try {
       return await Admin.findOne({ username : username});
-    }catch (error) {
+    } catch (error) {
       throw new Error('Error fetching user: ' + error.message);
-    
+    }
+  }
   /**
    * Checks if a user is an admin
    * @param {string} admin_id - The unique identifier of the admin
