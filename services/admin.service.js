@@ -3,6 +3,8 @@ const UserDao = ('../common/daos/user.dao');
  * AdminServices class provides methods for managing admin users.
  * It interacts with the UserDao to perform CRUD operations on admin data.
  */
+const UserDao = require('../common/daos/user.dao');
+const bycrypt = require('bcryptjs');
 class AdminServices {
   
   /**
@@ -11,6 +13,8 @@ class AdminServices {
    * @returns {Promise<Object>} The created admin user.
    */
   async createAdmin(adminData) {
+    const salt = await bycrypt.genSalt(10);
+    adminData.password = await bycrypt.hash(adminData.password, salt);
     return await UserDao.createUser(adminData);
   }
   
