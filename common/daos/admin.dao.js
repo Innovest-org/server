@@ -126,16 +126,19 @@ class AdminDao {
    */
   async isAdmin(adminId) {
     try {
-      const admin = await Admin.findById({admin_id: adminId});
-      if (admin && admin.role === 'SUPER_ADMIN' || admin.role === 'SUPER_ADMIN') {
-        return true;
-      }
-      return false;
+        const admin = await Admin.findOne({ admin_id: adminId });
+        if (!admin) {
+            console.log(`No admin found with id: ${adminId}`);
+            return false;
+        }
+        console.log(`Admin found: ${admin.role}`);
+        return admin.role === 'SUPER_ADMIN' || admin.role === 'ADMIN';
     } catch (error) {
-      console.error('Error checking admin status:', error);
-      throw new Error('Unable to verify admin status');
+        console.error('Error checking admin status:', error);
+        throw new Error('Unable to verify admin status');
     }
-  }
+}
+
 }
 
 module.exports = new AdminDao();

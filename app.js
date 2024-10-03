@@ -20,7 +20,6 @@ app.use(require('cookie-parser')()); // Parse cookies
 
 // Routes
 app.use('/api', adminModule());
-
 app.use('/api', communityModule());
 
 // Start the server
