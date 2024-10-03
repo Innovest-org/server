@@ -1,6 +1,5 @@
 const express = require('express');
 const CommunityController = require('../controllers/community.controller');
-const { checkOwnership } = require('../middlewares/checkOwnership.middleware');
 const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
 const AuthMiddleware = require('../middlewares/auth.middleware');
 const checkRole = require('../middlewares/role.middleware');
