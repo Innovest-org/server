@@ -1,4 +1,5 @@
 const Community = require('../../db/models/communityModel');
+const { v4: uuidv4 } = require('uuid');
 
 class CommunityDAO {
   /**
@@ -9,36 +10,66 @@ class CommunityDAO {
    */
   async createCommunity(communityData) {
     try {
-      return await Community.create(communityData);
+      if (communityData.admins && !Array.isArray(communityData.admins)) {
+        communityData.admins = [communityData.admins];
+      }
+
+      const community = new Community({
+        community_id: uuidv4(),
+        ...communityData,
+      });
+
+      return await community.save();
     } catch (error) {
+      if (error.code === 1100) {
+        throw new Error(
+          `A community with the name "${communityData.community_name}" already exists.`,
+        );
+      }
       throw new Error('Error creating community: ' + error.message);
     }
   }
 
   /**
    * Updates an existing community using the provided data
-   * @param {string} communityName - The unique name of the community to update
+   * @param {string} communityId - The unique id of the community to update
    * @param {Object} communityData - Data for the updated community
    * @returns {Promise<Community>} - The updated community
-   * @throws {Error} - If an error occurs while updating the community
+   * @throws {Error} - If an error occurs while updating the community or if the community is not found
    */
-  async updateCommunity(communityName, communityData) {
+  async updateCommunity(communityId, communityData) {
     try {
-      return await Community.findOneAndUpdate({ community_name: communityName }, communityData, { new: true });
+      const updatedCommunity = await Community.findOneAndUpdate(
+        { community_id: communityId },
+        communityData,
+        { new: true },
+      );
+
+      if (!updatedCommunity) {
+        throw new Error('Community not found');
+      }
+      return updatedCommunity;
     } catch (error) {
       throw new Error('Error updating community: ' + error.message);
     }
   }
 
   /**
-   * Deletes a community by its name
-   * @param {string} communityName - The unique name of the community to delete
+   * Deletes a community by its id
+   * @param {string} communityId - The unique id of the community to delete
    * @returns {Promise<Community>} - The deleted community
    * @throws {Error} - If an error occurs while deleting the community
+   * or if the community is not found
    */
-  async deleteCommunity(communityName) {
+  async deleteCommunity(communityId) {
     try {
-      return await Community.findOneAndDelete({ community_name: communityName });
+      const deletedCommunity = await Community.findOneAndDelete({
+        community_id: communityId,
+      });
+      if (!deletedCommunity) {
+        throw new Error('Community not found');
+      }
+      return deletedCommunity;
     } catch (error) {
       throw new Error('Error deleting community: ' + error.message);
     }
@@ -51,32 +82,50 @@ class CommunityDAO {
    */
   async getAllCommunities() {
     try {
-      return await Community.find({})
-        .populate('admins')
-        .populate('users')
-        .populate('pages');
+      return await Community.find({});
     } catch (error) {
-      throw new Error('Error fetching communities: ' + error.message);
+      throw new Error(error.message);
+    }
+  }
+
+  /**
+   * Retrieves a community by its id
+   * @param {string} communityId - The unique id of the community to retrieve
+   * @returns {Promise<Community>} - The community
+   * @throws {Error} - If an error occurs while fetching the community or
+   * if the community is not found
+   */
+  async getCommunity(communityId) {
+    try {
+      const community = await Community.findOne({ community_id: communityId });
+      if (!community) {
+        throw new Error(`Community not found with ID: ${communityId}`);
+      }
+      return community;
+    } catch (error) {
+      console.error('Error fetching community:', error);
+      throw new Error('Error fetching community: ' + error.message);
     }
   }
 
   /**
    * Retrieves a community by its name
-   * @param {string} communityName - The unique name of the community to retrieve
+   * @param {string} community_id - The community name to retrieve
    * @returns {Promise<Community>} - The community
    * @throws {Error} - If an error occurs while fetching the community
    */
-  async getCommunity(communityName) {
+  async getCommunityByName(community_name) {
     try {
-        return await Community.findOne({ community_name: communityName })
-            .populate('admins')
-            .populate('users')
-            .populate('pages');
+      const community = await Community.findOne({ community_name: community_name });
+      if (!community) {
+        throw new Error('Community not found');
+      }
+      return community;
     } catch (error) {
-        throw new Error('Error fetching community: ' + error.message);
+      console.error('Error fetching community by name:', error);
+      throw new Error('Error fetching community: ' + error.message);
     }
-}
-
+  }
 }
 
 module.exports = new CommunityDAO();

@@ -11,7 +11,7 @@ class CommunityController {
   async createCommunity(req, res) {
     try {
       // check on it again
-      const admin_id = req.user.admin_id;
+      const admin_id = req.user.id;
       const communityData = new CreateCommunityDTO(req.body);
       const community = await CommunityServices.createCommunity(admin_id, communityData);
       res.status(201).json({ message: 'Community created', community });
@@ -23,20 +23,23 @@ class CommunityController {
 
   /**
    * Updates an existing community using the provided data
-   * @param {Object} req - The HTTP request object containing the community name in the params and update data in the body
+   * @param {Object} req - The HTTP request object containing the
+   * community name in the params and update data in the body
    * @param {Object} res - The HTTP response object
    * @returns {Promise<void>} - Responds with the updated community or an error message
    */
   async updateCommunity(req, res) {
     try {
-      const { community_name } = req.params;
-      const admin_id = req.user.admins;
+      const { community_id } = req.params;
+      const admin_id = req.user.id;
       const communityData = new UpdateCommunityDTO(req.body);
       communityData.validate();
 
-      const community = await CommunityServices.updateCommunity(community_name, admin_id, communityData);
+      const community = await CommunityServices.updateCommunity(community_id, admin_id, communityData);
       res.status(200).json({ message: 'Community updated', community });
+
     } catch (error) {
+      console.error('Error in updateCommunity:', error);
       res.status(400).json({ message: error.message });
     }
   }
@@ -50,10 +53,10 @@ class CommunityController {
    */
   async deleteCommunity(req, res) {
     try {
-      const { community_name } = req.params;
-      const admin_id = req.user.admins; // Updated here
+      const { community_id } = req.params;
+      const admin_id = req.user.id;
 
-      const community = await CommunityServices.deleteCommunity(community_name, admin_id);
+      const community = await CommunityServices.deleteCommunity(community_id, admin_id);
       res.status(200).json({ message: 'Community deleted', community });
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -68,11 +71,12 @@ class CommunityController {
    */
   async getCommunityById(req, res) {
     try {
-      const { community_name } = req.params;
-      const community = await CommunityServices.getCommunityById(community_name);
+      const { community_id } = req.params;
+      const community = await CommunityServices.getCommunityById(community_id);
       res.status(200).json({ community });
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      console.error('Error in getCommunityById:', error);
+      res.status(400).json({ message: error.message, stack: error.stack });
     }
   }
 
@@ -88,6 +92,16 @@ class CommunityController {
       res.status(200).json({ communities });
     } catch (error) {
       res.status(400).json({ message: error.message });
+    }
+  }
+
+  async getCommunityByName(req, res) {
+    try {
+      const { community_name } = req.params;
+      const community = await CommunityServices.getCommunityByName(community_name);
+      res.status(200).json({ community });
+    } catch (error) {
+      res.status(400).json({message: error.message});
     }
   }
 }
