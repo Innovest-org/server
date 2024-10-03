@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const validator = require('validator');
 class UserServices {
     async register(user , documents) {
+        console.log(user)
         // check if any file name is already exist to avoid over writing
         for (const document of documents) {
             if (FileManagement.check_if_file_exist(document.originalname)) {
@@ -28,14 +29,16 @@ class UserServices {
             const savedUser = await userDao.createUser(user);
             const payload = {
                 user: {
-                    id: savedUser.user_id,
+                    id: savedUser.id,
                     role: savedUser.role,
                     national_id: savedUser.national_id,
                     email: savedUser.email,
                     username: savedUser.username,
+                    permissions: savedUser.permissions
                 }
             };
-            jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+            const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+            return token;
         }catch (error) {
             // delete the saved files if the user creation failed
             for (const document of documents) {
@@ -62,8 +65,10 @@ class UserServices {
         }
         const payload = {
             user: {
-                id: user.user_id,
+                id: user.id,
                 role: user.role,
+                national_id: user.national_id,
+                permissions: user.permissions
             }
         };
         const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });

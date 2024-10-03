@@ -3,6 +3,11 @@ const { Schema } = mongoose;
 const { v4: uuidv4 } = require('uuid');
 const uniqueValidator = require('mongoose-unique-validator');
 
+const permissionsEnum = [
+  "DELETE_USER",
+  "UPDATE_USER",
+  "VIEW_USER",
+];
 // User Schema
 const userSchema = new Schema(
   {
@@ -35,11 +40,19 @@ const userSchema = new Schema(
       type: Number,
       min: [1, 'Nationality ID should be positive'],
     },    
-    id_documents: [{type: String}], // must be documents because national_id has 2 sides
+    id_documents: [{type: String}],
     profile_image: {
       type: String,
       default: 'https://i.ibb.co/6WtQfMm/default.png',
     },
+    permissions: {
+        type: [String],
+        enum: permissionsEnum,
+        default: ['UPDATE_USER',
+          'VIEW_USER',
+          'DELETE_USER',
+        ],
+      },
     is_verified: { type: Boolean, default: false },
     is_active: { type: Boolean, default: false },
 

@@ -1,4 +1,4 @@
-const User = require('../db/models/userModel');
+const { User } = require('../db/models/userModel');
 const Admin = require('../db/models/adminModel');
 
 const checkRole = (roles) => {
@@ -17,7 +17,7 @@ const checkRole = (roles) => {
                     console.log('User not found in Admin collection');
                 }
             } else {
-                user = await User.findById(userId);
+                user = await User.findOne({ id: userId });
                 if (!user) {
                     console.log('User not found in User collection');
                 }
