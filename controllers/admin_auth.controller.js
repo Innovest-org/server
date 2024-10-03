@@ -1,5 +1,5 @@
 const AdminAuthServices = require('../services/admin_auth.service');
-const RegisterDTO = require('../common/dtos/auth/register.dto');
+const RegisterDTO = require('../common/dtos/auth/register_admin.dto');
 const LoginDTO = require('../common/dtos/auth/login.dto');
 
 class AdminAuthController {

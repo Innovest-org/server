@@ -35,7 +35,7 @@ const userSchema = new Schema(
       type: Number,
       min: [1, 'Nationality ID should be positive'],
     },    
-    id_document: { type: String},
+    id_documents: [{type: String}], // must be documents because national_id has 2 sides
     profile_image: {
       type: String,
       default: 'https://i.ibb.co/6WtQfMm/default.png',
