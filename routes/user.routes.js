@@ -19,6 +19,7 @@ router.get('/' ,
   checkRole(['SUPER_ADMIN', "ADMIN", 'ENTREPRENEUR', 'INVESTOR']),
   checkPermissions(['VIEW_USER']),
   UserController.getUsers);
+
 router.get('/:id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN", 'ENTREPRENEUR', 'INVESTOR']),
@@ -30,12 +31,11 @@ router.delete('/:id',
   checkRole(['SUPER_ADMIN', "ADMIN", 'ENTREPRENEUR', 'INVESTOR']),
   checkPermissions(['DELETE_USER']),
   UserController.deleteUser);
+
 router.put('/:id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN", 'ENTREPRENEUR', 'INVESTOR']),
   checkPermissions(['UPDATE_USER']),
   UserController.updateUser);
-
-
 
 module.exports = router;
