@@ -5,15 +5,32 @@ const CommunitySchema = new mongoose.Schema({
    community_id: { type: String, default: uuidv4, unique: true, },
    community_name: { type: String, unique: true, required: true, maxlength: 100 },
    description: { type: String, required: true },
-   image: { type: String, required: false },
+   image_url: { type: String },
    admins: [{ type: String, ref: 'Admin' }],
-   users: [{ type: String, ref: 'CommunityUsers' }],
-   pages: [{ type: String, ref: 'CommunityPages' }],
-}, {timestamps: true });
+   member_count: { type: Number, default: 0 },
+   tags: [{ type: String }],
+   pending_users: [{ type: String, ref: 'User' }] 
+}, {
+   timestamps: true,
+   toJSON: { virtuals: true },
+   toObject: { virtuals: true }
+});
+
+CommunitySchema.virtual('users', {
+   ref: 'CommunityUsers',
+   localField: '_id',
+   foreignField: 'community_id'
+});
+
+CommunitySchema.virtual('pages', {
+   ref: 'CommunityPages',
+   localField: '_id',
+   foreignField: 'community_id'
+});
 
 CommunitySchema.set('toJSON', {
    transform: function (doc, ret) {
-     delete ret._id; // Remove _id from the response
+      delete ret._id;
       return ret;
    }
 });

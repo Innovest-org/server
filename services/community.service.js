@@ -1,5 +1,6 @@
 const CommunityDAO = require('../common/daos/community.dao');
 const adminDao = require('../common/daos/admin.dao');
+const communityDao = require('../common/daos/community.dao');
 
 class CommunityServices {
   /**
@@ -14,7 +15,7 @@ class CommunityServices {
       console.log(`Attempting to create community for admin: ${admin_id}`);
       const isAdminResult = await adminDao.isAdmin(admin_id);
       console.log(`isAdmin result: ${isAdminResult}`);
-      
+
       if (!isAdminResult) {
         const error = new Error("Only admins can create a community");
         error.statusCode = 403;
@@ -45,7 +46,7 @@ class CommunityServices {
     if (!isAdmin) {
       throw new Error("Only admins can update a community");
     }
-    
+
     // Ensure the community exists before updating
     const community = await CommunityDAO.getCommunity(community_id);
     if (!community) {
@@ -67,15 +68,15 @@ class CommunityServices {
   async deleteCommunity(community_id, admin_id) {
     try {
       const isAdmin = await adminDao.isAdmin(admin_id);
-    if (!isAdmin) {
-      throw new Error("Only admins can delete a community");
-    }
+      if (!isAdmin) {
+        throw new Error("Only admins can delete a community");
+      }
 
-    const community = await CommunityDAO.getCommunity(community_id);
-    if (!community || !community.admins.includes(admin_id)) {
-      throw new Error('Only admins of this community can delete it');
-    }
-    return await CommunityDAO.deleteCommunity(community_id);
+      const community = await CommunityDAO.getCommunity(community_id);
+      if (!community || !community.admins.includes(admin_id)) {
+        throw new Error('Only admins of this community can delete it');
+      }
+      return await CommunityDAO.deleteCommunity(community_id);
     } catch (error) {
       console.error('Error deleting community:', error);
     }
@@ -124,6 +125,88 @@ class CommunityServices {
       console.error('Error fetching community by name:', error);
     }
   }
+
+  /**
+   * Adds a user to a community's pending users list
+   * @param {string} communityId - The unique id of the community to add the user to
+   * @param {string} userId - The unique id of the user to add
+   * @returns {Promise<Community>} - The updated community
+   * @throws {Error} - If an error occurs while updating the community
+   */
+  async addUserToPendingUsers(communityId, userId) {
+    try {
+      return await CommunityDAO.addUserToPendingUsers(communityId, userId);
+    } catch (error) {
+      console.error('Error adding user to pending users:', error);
+      throw new Error('Unable to add user to pending users at the moment');
+
+    }
+  }
+
+  /**
+   * Approves a user to join a community
+   * @param {string} communityId - The unique id of the community to approve the user to join
+   * @param {string} userId - The unique id of the user to approve
+   * @returns {Promise<Community>} - The updated community
+   * @throws {Error} - If an error occurs while approving the user
+   */
+  async approveUserToJoinCommunity(communityId, userId) {
+    try {
+      return await CommunityDAO.approveUserToJoinCommunity(communityId, userId);
+    } catch (error) {
+      console.error('Error approving user:', error);
+      throw new Error('Unable to approve user at the moment');
+    }
+  }
+
+  /**
+   * Rejects a user to join a community
+   * @param {string} communityId - The unique id of the community to reject the user from
+   * @param {string} userId - The unique id of the user to reject
+   * @returns {Promise<Community>} - The updated community
+   * @throws {Error} - If an error occurs while rejecting the user
+   */
+  async rejectUserToJoinCommunity(communityId, userId) {
+    try {
+      return await CommunityDao.rejectUserToJoinCommunity(communityId, userId);
+    } catch (error) {
+      console.error('Error rejecting user:', error);
+      throw new Error('Unable to reject user at the moment');
+    }
+  }
+
+  /**
+   * Removes a user from a community
+   * @param {string} communityId - The unique id of the community to remove the user from
+   * @param {string} userId - The unique id of the user to remove
+   * @returns {Promise<Community>} - The updated community
+   * @throws {Error} - If an error occurs while removing the user
+   */
+  async removeUserFromCommunity(communityId, userId) {
+    try {
+      return await CommunityDAO.removeUserFromCommunity(communityId, userId)
+    } catch (error) {
+      console.error('Error removing user from community:', error);
+      throw new Error('Error removing user from community: ' + error.message);
+    }
+  }
+
+
+  /**
+   * Retrieves the users of a community
+   * @param {string} communityId - The unique id of the community to retrieve the users of
+   * @returns {Promise<Array<User>>} - The users of the community
+   * @throws {Error} - If an error occurs while fetching the community users
+   */
+  async getCommunityUsers(communityId) {
+    try {
+      return await CommunityDAO.getCommunityUsers(communityId);
+    } catch (error) {
+      console.error('Error fetching community users:', error);
+      throw new Error('Error fetching community users: ' + error.message);
+    }
+  }
+
 }
 
 module.exports = new CommunityServices();

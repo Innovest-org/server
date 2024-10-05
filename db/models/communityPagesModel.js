@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 
 const CommunityPagesSchema = new mongoose.Schema({
-    community_name: { type: mongoose.Schema.Types.ObjectId, ref: 'Community', required: true },
+    community_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Community', required: true },
     page_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Page', required: true },
+    is_pinned: { type: Boolean, default: false },
+    is_featured: { type: Boolean, default: false },
     admin: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
     visibility: { type: Boolean, default: true },
 }, { timestamps: true });

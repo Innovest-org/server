@@ -126,6 +126,99 @@ class CommunityDAO {
       throw new Error('Error fetching community: ' + error.message);
     }
   }
+
+  /**
+   * Adds a user to a community's pending users list
+   * @param {string} communityId - The unique id of the community to add the user to
+   * @param {string} userId - The unique id of the user to add
+   * @returns {Promise<Community>} - The updated community
+   * @throws {Error} - If an error occurs while updating the community
+   */
+  async addUserToPendingUsers(communityId, userId) {
+    try {
+      return await Community.findOneAndUpdate(
+        { community_id: communityId },
+        { $addToSet: { pending_users: userId } },
+        { new: true },
+      )
+    } catch (error) {
+      console.error('Error adding user to pending users:', error);
+      throw new Error('Error adding user to pending users: ' + error.message);
+    }
+  }
+
+  /**
+   * Adds a user to a community's user list
+   * @param {string} communityId - The unique id of the community to add the user to
+   * @param {string} userId - The unique id of the user to add
+   * @returns {Promise<Community>} - The updated community
+   * @throws {Error} - If an error occurs while updating the community
+   */
+  async approveUserToJoinCommunity(communityId, userId) {
+    try {
+      return await Community.findOneAndUpdate(
+        { community_id: communityId },
+        {
+          $pull: { pending_users: userId },
+          $addToSet: { users: userId }
+        },
+        { new: true },
+      )
+    } catch (error) {
+      console.error('Error approving user to join community:', error);
+      throw new Error('Error approving user to join community: ' + error.message);
+    }
+  }
+
+  async rejectUserToJoinCommunity(communityId, userId) {
+    try {a
+      return await Community.findOneAndUpdate(
+        { community_id: communityId },
+        { $pull: { pending_users: userId } },
+        { new: true },
+      )
+    } catch (error) {
+      console.error('Error rejecting user to join community:', error);
+      throw new Error('Error rejecting user to join community: ' + error.message);
+    }
+  }
+
+  /**
+   * Removes a user from a community's user list
+   * @param {string} communityId - The unique id of the community to remove the user from
+   * @param {string} userId - The unique id of the user to remove
+   * @returns {Promise<Community>} - The updated community
+   * @throws {Error} - If an error occurs while updating the community
+   */
+  async removeUserFromCommunity(communityId, userId) {
+    try {
+      return await Community.findOneAndUpdate(
+        { community_id: communityId },
+        { $pull: { users: userId } },
+        { new: true },
+      )
+    } catch (error) {
+      console.error('Error removing user from community:', error);
+      throw new Error('Error removing user from community: ' + error.message);
+    }
+  }
+
+  /**
+   * Retrieves the users of a community
+   * @param {string} communityId - The unique id of the community to retrieve users for
+   * @returns {Promise<Community>} - The community with its users populated
+   * @throws {Error} - If an error occurs while retrieving the community
+   */
+  async getCommunityUsers(communityId) {
+    try {
+      const community = await Community.findOne({ community_id: communityId }).populate('users');
+      return community ? community.users : [];
+    } catch (error) {
+      console.error('Error fetching community users:', error);
+      throw new Error('Error fetching community users: ' + error.message);
+    }
+  }
+
 }
 
 module.exports = new CommunityDAO();

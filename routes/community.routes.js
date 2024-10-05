@@ -47,4 +47,37 @@ router.get('/',
   checkPermissions(['VIEW_COMMUNITY']),
   CommunityController.getAllCommunities);
 
+// Route to allow a user to join a community
+router.post('/:community_id/join',
+  AuthMiddleware(),
+  checkPermissions(['JOIN_COMMUNITY']),
+  CommunityController.addUserToPendingUsers);
+
+// Route to approve a user to join a community
+router.post('/:community_id/approve-user',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  checkPermissions(['APPROVE_USER']),
+  CommunityController.approveUserToJoinCommunity);
+
+// Route to reject a user from joining a community
+router.post('/:community_id/reject-user',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  checkPermissions(['REJECT_USER']),
+  CommunityController.rejectUserToJoinCommunity);
+
+// Route to remove a user from a community
+router.delete('/:communityId/users/:userId',
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  checkPermissions(['REMOVE_USER_FROM_COMMUNITY']),
+  CommunityController.removeUserFromCommunity
+);
+
+// Route to get users of a community
+router.get('/:communityId/users',
+  AuthMiddleware(),
+  CommunityController.getCommunityUsers
+);
+
 module.exports = router;

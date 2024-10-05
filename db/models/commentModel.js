@@ -1,16 +1,13 @@
 const mongoose = require('mongoose')
 const { v4: uuidv4 } = require('uuid');
 
-const commentSchema = new mongoose .Schema({
-    comment_id:{type:String , default: uuidv4 ,required:true},
-    content:{type:String},
+const CommentSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    page_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Page', required: true },
+    content: { type: String, required: true, maxlength: 1000 },
+}, { timestamps: true });
 
-    created_at :{ type:Date , default: Date.now },
+CommentSchema.index({ user_id: 1, page_id: 1 });
 
-    user_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' , required: true  }],  // Reference to User
-    post_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'post' , required: true  }],  // Reference to post
-});
-
-
-const comment = mongoose.model('comment', commentSchema);
-module.exports = comment;
+const Comment = mongoose.model('Comment', CommentSchema);
+module.exports = Comment;
