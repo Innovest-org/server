@@ -7,8 +7,10 @@ const permissionsEnum = [
   "DELETE_USER",
   "UPDATE_USER",
   "VIEW_USER",
+  "JOIN_COMMUNITY",
+  'REMOVE_USER_FROM_COMMUNITY'
 ];
-// User Schema
+
 const userSchema = new Schema(
   {
     id: { type: String, default: uuidv4, unique: true },
@@ -48,9 +50,12 @@ const userSchema = new Schema(
     permissions: {
         type: [String],
         enum: permissionsEnum,
-        default: ['UPDATE_USER',
+        default: [
+          'UPDATE_USER',
           'VIEW_USER',
           'DELETE_USER',
+          'JOIN_COMMUNITY',
+          'REMOVE_USER_FROM_COMMUNITY'
         ],
       },
     is_verified: { type: Boolean, default: false },
@@ -82,7 +87,6 @@ const userSchema = new Schema(
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 
-// Interest Schema
 const interestsSchema = new Schema(
   {
     name: {
@@ -106,7 +110,6 @@ const interestsSchema = new Schema(
   { timestamps: true },
 );
 
-// Languages Schema
 const languagesSchema = new Schema(
   {
     name: {
@@ -156,7 +159,6 @@ const userLanguagesSchema = new Schema(
   { timestamps: true },
 );
 
-// Creating Models
 const User = mongoose.model('User', userSchema);
 const Interest = mongoose.model('Interest', interestsSchema);
 const UserInterests = mongoose.model('UserInterests', userInterestsSchema);

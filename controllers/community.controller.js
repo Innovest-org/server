@@ -1,5 +1,5 @@
 const CommunityServices = require('../services/community.service');
-const { CreateCommunityDTO, UpdateCommunityDTO } = require('../common/dtos/community.dto');
+const { CreateCommunityDTO, UpdateCommunityDTO } = require('../common/dtos/communityDTO/community.dto');
 
 class CommunityController {
   /**
@@ -95,13 +95,101 @@ class CommunityController {
     }
   }
 
+  /**
+   * Retrieves a community by its name
+   * @param {Object} req - The HTTP request object containing the community name in the params
+   * @param {Object} res - The HTTP response object
+   * @returns {Promise<void>} - Responds with the community or an error message
+   */
   async getCommunityByName(req, res) {
     try {
       const { community_name } = req.params;
       const community = await CommunityServices.getCommunityByName(community_name);
       res.status(200).json({ community });
     } catch (error) {
-      res.status(400).json({message: error.message});
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  /**
+   * Adds a user to a community's pending users list
+   * @param {Object} req - The HTTP request object containing
+   * the community id in the params and the user id in the body
+   * @param {Object} res - The HTTP response object
+   * @returns {Promise<void>} - Responds with the updated community or an error message
+   */
+  async addUserToPendingUsers(req, res) {
+    try {
+      const { community_id } = req.params;
+      const { user_id } = req.body;
+      const community = await CommunityServices.addUserToPendingUsers(community_id, user_id);
+      res.status(200).json({ community });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  /**
+   * Approves a user to join a community
+   * @param {Object} req - The HTTP request object containing
+   * the community id in the params and the user id in the body
+   * @param {Object} res - The HTTP response object
+   * @returns {Promise<void>} - Responds with the updated community or an error message
+   */
+  async approveUserToJoinCommunity(req, res) {
+    try {
+      const { community_id } = req.params;
+      const { user_id } = req.body;
+      const community = await CommunityServices.approveUserToJoinCommunity(community_id, user_id);
+      res.status(200).json({ community });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  async rejectUserToJoinCommunity(req, res) {
+    try {
+      const { community_id } = req.params;
+      const { user_id } = req.user.id;
+      const community = await CommunityServices.rejectUserToJoinCommunity(community_id, user_id);
+      res.status(200).json({ community });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  }
+
+  /**
+  * Removes a user from a community
+  * @param {Object} req - The request object
+  * @param {Object} res - The response object
+  * @returns {Promise<void>}
+  */
+  async removeUserFromCommunity(req, res) {
+    const { communityId} = req.params;
+    const { user_id } = req.body;
+
+    try {
+      const updatedCommunity = await CommunityService.removeUserFromCommunity(communityId, user_id);
+      res.status(200).json({ message: 'User removed successfully', updatedCommunity });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  /**
+   * Retrieves users of a community
+   * @param {Object} req - The request object
+   * @param {Object} res - The response object
+   * @returns {Promise<void>}
+   */
+  async getCommunityUsers(req, res) {
+    const { community_id } = req.params;
+
+    try {
+      const users = await CommunityService.getCommunityUsers(community_id);
+      res.status(200).json(users);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
   }
 }
