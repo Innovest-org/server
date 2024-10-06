@@ -121,8 +121,8 @@ class CommunityController {
   async addUserToPendingUsers(req, res) {
     try {
       const { community_id } = req.params;
-      const { user_id } = req.body;
-      const community = await CommunityServices.addUserToPendingUsers(community_id, user_id);
+      const { id } = req.user;
+      const community = await CommunityServices.addUserToPendingUsers(community_id, id);
       res.status(200).json({ community });
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -138,21 +138,47 @@ class CommunityController {
    */
   async approveUserToJoinCommunity(req, res) {
     try {
-      const { community_id } = req.params;
-      const { user_id } = req.body;
+      const { community_id, user_id } = req.params;
+      console.log(user_id);
+
       const community = await CommunityServices.approveUserToJoinCommunity(community_id, user_id);
-      res.status(200).json({ community });
+      const hasJoined = Array.isArray(community.users) && community.users.includes(user_id);
+
+      console.log(user_id, hasJoined ? 'successfully joined' : 'failed to join');
+
+      if (hasJoined) {
+        community.member_count = community.users.length;
+        await community.save();
+        res.status(200).json({
+          message: 'User has successfully joined the community.',
+          community,
+        });
+      } else {
+        res.status(400).json({
+          message: 'Failed to join the community. Please try again.',
+          community,
+        });
+      }
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   }
 
+  /**
+   * Rejects a user to join a community
+   * @param {Object} req - The HTTP request object containing
+   * the community id in the params and the user id in the body
+   * @param {Object} res - The HTTP response object
+   * @returns {Promise<void>} - Responds with the updated community or an error message
+   */
   async rejectUserToJoinCommunity(req, res) {
     try {
-      const { community_id } = req.params;
-      const { user_id } = req.user.id;
+      const { community_id, user_id } = req.params;
       const community = await CommunityServices.rejectUserToJoinCommunity(community_id, user_id);
-      res.status(200).json({ community });
+      res.status(200).json({
+        message:
+          'User has been rejected from joining the community.',
+      });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -165,16 +191,24 @@ class CommunityController {
   * @returns {Promise<void>}
   */
   async removeUserFromCommunity(req, res) {
-    const { communityId} = req.params;
-    const { user_id } = req.body;
+    const { community_id, user_id } = req.params;
+    const authenticatedUserId = req.user.id;
+    const userRole = req.user.role;
+
+    const isAdmin = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN';
+
+    if (!isAdmin && authenticatedUserId !== user_id) {
+      return res.status(403).json({ message: 'Forbidden: You can only remove yourself from the community' });
+    }
 
     try {
-      const updatedCommunity = await CommunityService.removeUserFromCommunity(communityId, user_id);
+      const updatedCommunity = await CommunityServices.removeUserFromCommunity(community_id, user_id);
       res.status(200).json({ message: 'User removed successfully', updatedCommunity });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   }
+
 
   /**
    * Retrieves users of a community

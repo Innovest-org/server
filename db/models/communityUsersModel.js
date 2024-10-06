@@ -1,8 +1,13 @@
 const mongoose = require('mongoose');
 
 const CommunityUsersSchema = new mongoose.Schema({
-    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    community_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Community', required: true },
+    user_id: { type: String, ref: 'User', required: true },
+    community_id: { type: String, ref: 'Community', required: true },
+    member_status: {
+        type: String,
+        enum: ['PENDING', 'APPROVED', 'REJECTED'],
+        default: 'PENDING'
+    },
     role: { 
         type: String, 
         enum: ['MEMBER', 'ADMIN','SUPER_ADMIN'],

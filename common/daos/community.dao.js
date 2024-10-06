@@ -1,5 +1,7 @@
 const Community = require('../../db/models/communityModel');
 const { v4: uuidv4 } = require('uuid');
+const CommunityUsers = require('../../db/models/communityUsersModel');
+const { User } = require('../../db/models/userModel');
 
 class CommunityDAO {
   /**
@@ -136,11 +138,25 @@ class CommunityDAO {
    */
   async addUserToPendingUsers(communityId, userId) {
     try {
-      return await Community.findOneAndUpdate(
-        { community_id: communityId },
-        { $addToSet: { pending_users: userId } },
-        { new: true },
-      )
+      const existingUser = await CommunityUsers.findOne({
+        community_id: communityId,
+        user_id: userId,
+      });
+
+      if (existingUser) {
+        console.log(`User with ID: ${userId} is already in community with ID: ${communityId}`);
+        return {
+          message: `User is already a member of the community.`,
+          communityUser: existingUser, // Optionally return the existing user data
+        };
+      }
+      const communityUserEntry = new CommunityUsers({
+        user_id: userId,
+        community_id: communityId,
+        member_status: 'PENDING',
+        role: 'MEMBER',
+      });
+      return await communityUserEntry.save();
     } catch (error) {
       console.error('Error adding user to pending users:', error);
       throw new Error('Error adding user to pending users: ' + error.message);
@@ -156,26 +172,49 @@ class CommunityDAO {
    */
   async approveUserToJoinCommunity(communityId, userId) {
     try {
-      return await Community.findOneAndUpdate(
+      console.log('Approving user:', userId);
+      console.log('In community:', communityId);
+      const communityUser = await CommunityUsers.findOneAndUpdate(
+        { community_id: communityId, user_id: { $in: userId }, member_status: 'PENDING' },
+        { member_status: 'APPROVED' },
+        { new: true }
+      );
+
+      if (!communityUser) {
+        throw new Error(`There is no pending user with this id ${userId} in this community ${communityId} `);
+      }
+
+      const community = await Community.findOneAndUpdate(
         { community_id: communityId },
-        {
-          $pull: { pending_users: userId },
-          $addToSet: { users: userId }
-        },
-        { new: true },
+        { $addToSet: { users: userId }, $inc: { member_count: 1 } },
+        { new: true }
+      );
+
+      const updateUserCommunities = await User.findOneAndUpdate(
+        { id: userId },
+        { $addToSet: { user_communities: communityId } },
+        { new: true }
       )
+      if (!community) {
+        throw new Error(`Community not found with ID: ${communityId}`);
+      }
+      if (!updateUserCommunities) {
+        throw new Error(`User not found with ID: ${userId}`);
+      }
+
+      console.log('Successfully approved user:', { communityId, userId });
+      return community;
     } catch (error) {
-      console.error('Error approving user to join community:', error);
-      throw new Error('Error approving user to join community: ' + error.message);
+      console.error(error);
+      throw new Error('Error approving user to join community:', error);
     }
   }
 
   async rejectUserToJoinCommunity(communityId, userId) {
-    try {a
-      return await Community.findOneAndUpdate(
+    try {
+      return await CommunityUsers.findOneAndDelete(
         { community_id: communityId },
-        { $pull: { pending_users: userId } },
-        { new: true },
+        { user_id: userId }
       )
     } catch (error) {
       console.error('Error rejecting user to join community:', error);
@@ -192,16 +231,40 @@ class CommunityDAO {
    */
   async removeUserFromCommunity(communityId, userId) {
     try {
-      return await Community.findOneAndUpdate(
+      console.log('Community ID:', communityId);
+      console.log('User ID:', userId);
+
+      const removedUser = await CommunityUsers.findOneAndDelete({
+        community_id: communityId,
+        user_id: userId
+      });
+
+      if (!removedUser) {
+        throw new Error(`User with ID: ${userId} not found in community with ID: ${communityId}`);
+      }
+
+      const updatedCommunity = await Community.findOneAndUpdate(
         { community_id: communityId },
-        { $pull: { users: userId } },
-        { new: true },
-      )
+        { $pull: { users: userId }, $inc: { member_count: -1 } },
+        { new: true }
+      );
+
+      if (!updatedCommunity) {
+        throw new Error(`Community with ID: ${communityId} not found`);
+      }
+
+      console.log('Successfully removed user from community:', { communityId, userId });
+
+      return {
+        message: "User removed from community successfully.",
+        updatedCommunity
+      };
     } catch (error) {
       console.error('Error removing user from community:', error);
       throw new Error('Error removing user from community: ' + error.message);
     }
   }
+
 
   /**
    * Retrieves the users of a community
