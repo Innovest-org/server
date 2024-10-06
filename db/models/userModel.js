@@ -8,7 +8,8 @@ const permissionsEnum = [
   "UPDATE_USER",
   "VIEW_USER",
   "JOIN_COMMUNITY",
-  'REMOVE_USER_FROM_COMMUNITY'
+  "VIEW_COMMUNITY",
+  "REMOVE_USER_FROM_COMMUNITY"
 ];
 
 const userSchema = new Schema(
@@ -67,14 +68,11 @@ const userSchema = new Schema(
 
     // Relationships
     user_languages: [{ type: Schema.Types.ObjectId, ref: 'UserLanguages' }],
-    languages: [{ type: Schema.Types.ObjectId, ref: 'Languages' }],
     user_interests: [{ type: Schema.Types.ObjectId, ref: 'UserInterests' }],
-    interests: [{ type: Schema.Types.ObjectId, ref: 'Interest' }],
     last_login: { type: Date },
 
     // Communities
-    user_communities: [{ type: Schema.Types.ObjectId, ref: 'CommunityUsers' }],
-    communities: [{ type: Schema.Types.ObjectId, ref: 'Community' }],
+    user_communities: [{ type: String, ref: 'CommunityUsers' }],
 
     // Projects and Investments
     projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],

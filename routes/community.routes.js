@@ -3,6 +3,8 @@ const CommunityController = require('../controllers/community.controller');
 const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
 const AuthMiddleware = require('../middlewares/auth.middleware');
 const checkRole = require('../middlewares/role.middleware');
+const { checkOwnership } = require('../middlewares/checkOwnership.middleware');
+const Community = require('../db/models/communityModel');
 const router = express.Router();
 
 // Route to create a new community
@@ -43,7 +45,6 @@ router.get('/:community_id',
 // Route to get all communities
 router.get('/',
   AuthMiddleware(),
-  checkRole(['SUPER_ADMIN', "ADMIN"]),
   checkPermissions(['VIEW_COMMUNITY']),
   CommunityController.getAllCommunities);
 
@@ -54,21 +55,22 @@ router.post('/:community_id/join',
   CommunityController.addUserToPendingUsers);
 
 // Route to approve a user to join a community
-router.post('/:community_id/approve-user',
+router.post('/:community_id/approve-user/:user_id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   checkPermissions(['APPROVE_USER']),
   CommunityController.approveUserToJoinCommunity);
 
 // Route to reject a user from joining a community
-router.post('/:community_id/reject-user',
+router.delete('/:community_id/reject-user/:user_id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   checkPermissions(['REJECT_USER']),
   CommunityController.rejectUserToJoinCommunity);
 
 // Route to remove a user from a community
-router.delete('/:communityId/users/:userId',
+router.delete('/:community_id/users/:user_id',
+  AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   checkPermissions(['REMOVE_USER_FROM_COMMUNITY']),
   CommunityController.removeUserFromCommunity

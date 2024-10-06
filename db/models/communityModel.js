@@ -2,23 +2,23 @@ const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 
 const CommunitySchema = new mongoose.Schema({
-   community_id: { type: String, default: uuidv4, unique: true, },
+   community_id: { type: String, default: uuidv4, unique: true },
    community_name: { type: String, unique: true, required: true, maxlength: 100 },
    description: { type: String, required: true },
    image_url: { type: String },
    admins: [{ type: String, ref: 'Admin' }],
    member_count: { type: Number, default: 0 },
    tags: [{ type: String }],
-   pending_users: [{ type: String, ref: 'User' }] 
+   users: [{ type: String, ref: 'CommunityUsers' }],
 }, {
    timestamps: true,
    toJSON: { virtuals: true },
    toObject: { virtuals: true }
 });
 
-CommunitySchema.virtual('users', {
+CommunitySchema.virtual('communityUsers', {
    ref: 'CommunityUsers',
-   localField: '_id',
+   localField: 'users',
    foreignField: 'community_id'
 });
 
@@ -34,5 +34,6 @@ CommunitySchema.set('toJSON', {
       return ret;
    }
 });
+
 const Community = mongoose.model('Community', CommunitySchema);
 module.exports = Community;

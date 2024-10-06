@@ -168,7 +168,7 @@ class CommunityServices {
    */
   async rejectUserToJoinCommunity(communityId, userId) {
     try {
-      return await CommunityDao.rejectUserToJoinCommunity(communityId, userId);
+      return await CommunityDAO.rejectUserToJoinCommunity(communityId, userId);
     } catch (error) {
       console.error('Error rejecting user:', error);
       throw new Error('Unable to reject user at the moment');
@@ -190,7 +190,6 @@ class CommunityServices {
       throw new Error('Error removing user from community: ' + error.message);
     }
   }
-
 
   /**
    * Retrieves the users of a community
