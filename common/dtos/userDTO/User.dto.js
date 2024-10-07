@@ -11,6 +11,7 @@ class UserDTO {
     this.experience = user.experience || null;
     this.investment_preferences = user.investment_preferences || [];
     this.id_nationality = user.id_nationality || null;
+    this.id_documents = user.id_documents || null;
     this.profile_image = user.profile_image || 'https://i.ibb.co/6WtQfMm/default.png'; 
     this.is_verified = user.is_verified; 
     this.is_active = user.is_active; 

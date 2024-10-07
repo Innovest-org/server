@@ -12,6 +12,7 @@ class UpdateUserDTO {
     this.experience = user.experience || null;
     this.investment_preferences = user.investment_preferences || [];
     this.id_nationality = user.id_nationality || null;
+    this.id_documents = user.id_documents || null;
     this.profile_image = user.profile_image || null; 
     this.is_verified = user.is_verified !== undefined ? user.is_verified : null; 
     this.is_active = user.is_active !== undefined ? user.is_active : null; 

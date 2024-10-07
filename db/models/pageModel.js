@@ -12,16 +12,25 @@ const pageSchema = new mongoose.Schema({
   end_time: { type: Date, required: false },
   page_type: {
     type: String,
-    enum: ['EVENT', 'INFORMATION', 'POST', 'OTHER'],
+    enum: ['EVENT', 'ARTICLE', 'POST', 'PROJECT_INFO'],
   },
   page_state: {
     type: String,
     enum: ['PENDING', 'APPROVED', 'REJECTED'],
     default: 'PENDING',
   },
-  user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  likes: { type: Number, default: 0 },
+  views: { type: Number, default: 0 },
+  tags: [{ type: String }],
+
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   admin_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
-}, { timestamps: true });
+}, {
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+}
+);
 
 const Page = mongoose.model('Page', pageSchema);
 module.exports = Page;

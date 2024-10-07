@@ -3,7 +3,15 @@ const { Schema } = mongoose;
 const { v4: uuidv4 } = require('uuid');
 const uniqueValidator = require('mongoose-unique-validator');
 
-// User Schema
+const permissionsEnum = [
+  "DELETE_USER",
+  "UPDATE_USER",
+  "VIEW_USER",
+  "JOIN_COMMUNITY",
+  "VIEW_COMMUNITY",
+  "REMOVE_USER_FROM_COMMUNITY"
+];
+
 const userSchema = new Schema(
   {
     id: { type: String, default: uuidv4, unique: true },
@@ -35,11 +43,22 @@ const userSchema = new Schema(
       type: Number,
       min: [1, 'Nationality ID should be positive'],
     },    
-    id_documents: [{type: String}], // must be documents because national_id has 2 sides
+    id_documents: [{type: String}],
     profile_image: {
       type: String,
       default: 'https://i.ibb.co/6WtQfMm/default.png',
     },
+    permissions: {
+        type: [String],
+        enum: permissionsEnum,
+        default: [
+          'UPDATE_USER',
+          'VIEW_USER',
+          'DELETE_USER',
+          'JOIN_COMMUNITY',
+          'REMOVE_USER_FROM_COMMUNITY'
+        ],
+      },
     is_verified: { type: Boolean, default: false },
     is_active: { type: Boolean, default: false },
 
@@ -49,14 +68,11 @@ const userSchema = new Schema(
 
     // Relationships
     user_languages: [{ type: Schema.Types.ObjectId, ref: 'UserLanguages' }],
-    languages: [{ type: Schema.Types.ObjectId, ref: 'Languages' }],
     user_interests: [{ type: Schema.Types.ObjectId, ref: 'UserInterests' }],
-    interests: [{ type: Schema.Types.ObjectId, ref: 'Interest' }],
     last_login: { type: Date },
 
     // Communities
-    user_communities: [{ type: Schema.Types.ObjectId, ref: 'CommunityUsers' }],
-    communities: [{ type: Schema.Types.ObjectId, ref: 'Community' }],
+    user_communities: [{ type: String, ref: 'CommunityUsers' }],
 
     // Projects and Investments
     projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
@@ -69,7 +85,6 @@ const userSchema = new Schema(
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 
-// Interest Schema
 const interestsSchema = new Schema(
   {
     name: {
@@ -93,7 +108,6 @@ const interestsSchema = new Schema(
   { timestamps: true },
 );
 
-// Languages Schema
 const languagesSchema = new Schema(
   {
     name: {
@@ -143,7 +157,6 @@ const userLanguagesSchema = new Schema(
   { timestamps: true },
 );
 
-// Creating Models
 const User = mongoose.model('User', userSchema);
 const Interest = mongoose.model('Interest', interestsSchema);
 const UserInterests = mongoose.model('UserInterests', userInterestsSchema);
