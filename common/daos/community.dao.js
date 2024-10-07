@@ -231,9 +231,6 @@ class CommunityDAO {
    */
   async removeUserFromCommunity(communityId, userId) {
     try {
-      console.log('Community ID:', communityId);
-      console.log('User ID:', userId);
-
       const removedUser = await CommunityUsers.findOneAndDelete({
         community_id: communityId,
         user_id: userId

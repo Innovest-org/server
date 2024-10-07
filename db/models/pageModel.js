@@ -14,11 +14,6 @@ const pageSchema = new mongoose.Schema({
     type: String,
     enum: ['EVENT', 'ARTICLE', 'POST', 'PROJECT_INFO'],
   },
-  page_state: {
-    type: String,
-    enum: ['PENDING', 'APPROVED', 'REJECTED'],
-    default: 'PENDING',
-  },
   likes: { type: Number, default: 0 },
   views: { type: Number, default: 0 },
   tags: [{ type: String }],

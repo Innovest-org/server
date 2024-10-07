@@ -9,7 +9,16 @@ const permissionsEnum = [
   "VIEW_USER",
   "JOIN_COMMUNITY",
   "VIEW_COMMUNITY",
-  "REMOVE_USER_FROM_COMMUNITY"
+  "REMOVE_USER_FROM_COMMUNITY",
+  "CREATE_PAGE",
+  "UPDATE_PAGE",
+  "DELETE_PAGE",
+  "VIEW_PAGE",
+  "COMMENT_ON_PAGE",
+  "VIEW_LIKES",
+  "VIEW_COMMENTS",
+  "LIKE_PAGE",
+  "DISLIKE_PAGE",
 ];
 
 const userSchema = new Schema(

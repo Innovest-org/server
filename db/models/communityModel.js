@@ -8,7 +8,9 @@ const CommunitySchema = new mongoose.Schema({
    image_url: { type: String },
    admins: [{ type: String, ref: 'Admin' }],
    member_count: { type: Number, default: 0 },
+   page_count: { type: Number, default: 0 },
    tags: [{ type: String }],
+   pages: [{ type: String, ref: 'CommunityPages' }],
    users: [{ type: String, ref: 'CommunityUsers' }],
 }, {
    timestamps: true,
@@ -22,9 +24,9 @@ CommunitySchema.virtual('communityUsers', {
    foreignField: 'community_id'
 });
 
-CommunitySchema.virtual('pages', {
+CommunitySchema.virtual('CommunityPages', {
    ref: 'CommunityPages',
-   localField: '_id',
+   localField: 'pages',
    foreignField: 'community_id'
 });
 
