@@ -1,25 +1,24 @@
 class CreatePageDTO {
-    constructor(data) {
-        this.title = data.title;
-        this.content = data.content;
-        this.location = data.location;
-        this.images_url = data.images_url || [];
-        this.page_url = data.page_url;
-        this.start_time = data.start_time;
-        this.end_time = data.end_time;
-        this.page_type = data.page_type;
-        this.page_state = data.page_state || 'PENDING';
-        this.user_id = data.user_id;
-        this.admin_id = data.admin_id;
-    }
+  constructor(pageData) {
+    this.title = pageData.title;
+    this.content = pageData.content;
+    this.location = pageData.location;
+    this.images_url = pageData.images_url || [];
+    this.page_url = pageData.page_url;
+    this.start_time = pageData.start_time;
+    this.end_time = pageData.end_time;
+    this.page_type = pageData.page_type;
+    this.tags = pageData.tags || [];
 
-    validate() {
-        if (!this.title) throw new Error('Title is required');
-        if (!this.content) throw new Error('Content is required');
-        if (!this.page_url) throw new Error('Page URL is required');
-        if (!this.user_id) throw new Error('User ID is required');
-        if (!this.admin_id) throw new Error('Admin ID is required');
+    this.author = author;
+    this.admin_id = admin_id;
+  }
+
+  validate() {
+    if (!this.title || !this.content || !this.page_url || !this.author || !this.admin_id) {
+      throw new Error('Title, content, page_url, author, and admin_id are required fields.');
     }
+  }
 }
 
 module.exports = CreatePageDTO;

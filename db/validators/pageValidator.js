@@ -1,29 +1,34 @@
 const Joi = require('joi');
 
-const createpageValidationSchema= Joi.object({
-    id: Joi.string().required(), 
-    title:Joi.string().max(500).required(),
-    content:Joi.string().min(1).max(500).required(),
-    location:Joi.string().optional(),
-    image_url:Joi.array().items(Joi.string().uri()).optional(),
-    page_url:Joi.string().uri().optional(),
-
+// Create a schema for the page validator
+const pageSchema = Joi.object({
+    title: Joi.string().max(500).required(),
+    content: Joi.string().required(),
+    location: Joi.string().optional(),
+    images_url: Joi.array().items(Joi.string().uri()).optional(),
+    page_url: Joi.string().uri().required(),
     start_time: Joi.date().optional(),
     end_time: Joi.date().optional(),
-
-    admin_state: Joi.string().required().default('APPROVER'),
-    page_state: Joi.string().required().default('PENDING'),
-
-    created_at: Joi.date().default(Date.now),
-    updated_at: Joi.date().default(Date.now),
-
-    user_id:Joi.string().required(), 
-    admin_id: Joi.string().required(),
-    
+    page_type: Joi.string().valid('EVENT', 'ARTICLE', 'POST', 'PROJECT_INFO').required(),
+    tags: Joi.array().items(Joi.string()).optional(),
+    author: Joi.string().required(), // Assuming author ID is a string
+    admin_id: Joi.string().required(), // Assuming admin ID is a string
 });
 
+// Validation function for creating a page
+const validateCreatePage = (pageData) => {
+    return pageSchema.validate(pageData);
+};
 
-module.exports = {createpageValidationSchema };
+// Validation function for updating a page
+const validateUpdatePage = (pageData) => {
+    // Update validator allows fields to be optional
+    const updateSchema = pageSchema.fork(['title', 'content', 'location', 'images_url', 'start_time', 'end_time', 'tags'], (field) => field.optional());
 
+    return updateSchema.validate(pageData);
+};
 
-
+module.exports = {
+    validateCreatePage,
+    validateUpdatePage,
+};
