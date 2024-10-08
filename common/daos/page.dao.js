@@ -5,17 +5,17 @@ const { validateCreatePage, validateUpdatePage } = require('../../db/validators/
 
 class PageDAO {
   /**
-   * Creates a new page in the database
-   * @param {Object} pageData - Page data to be saved in the database
-   * @returns {Promise<Page>} - The newly created page
+   * Creates a new page.
+   * @param {Object} pageData - Data for the new page.
+   * @param {String} userId - ID of the user creating the page.
+   * @returns {Promise<Page>} - The newly created page document.
    */
-  async createPage(pageData) {
-    const { error } = validateCreatePage(pageData);
-    if (error) {
-      throw new Error(error.details[0].message);
-    }
+  async createPage(pageData, userId) {
     try {
-      const page = new Page(pageData);
+      const page = new Page({
+        ...pageData,
+        author: userId,
+      });
       return await page.save();
     } catch (error) {
       throw new Error('Error creating page: ' + error.message);
@@ -23,25 +23,26 @@ class PageDAO {
   }
 
   /**
-   * Updates a page in the database
-   * @param {string} pageId - ID of the page to update
-   * @param {Object} pageData - Page data to be updated
-   * @returns {Promise<Page>} - The updated page
+   * Updates a page.
+   * @param {String} pageId - ID of the page to update.
+   * @param {Object} pageData - Data to update the page with.
+   * @param {String} userId - ID of the user updating the page.
+   * @returns {Promise<Page>} - The updated page document.
    */
-  async updatePage(pageId, pageData) {
+  async updatePage(pageId, pageData, userId) {
     const { error } = validateUpdatePage(pageData);
     if (error) {
       throw new Error(error.details[0].message);
     }
     try {
       const updatedPage = await Page.findOneAndUpdate(
-        { page_id: pageId },
+        { page_id: pageId, author: userId },
         { $set: pageData },
         { new: true }
       );
 
       if (!updatedPage) {
-        throw new Error('Page not found');
+        throw new Error('Page not found or not authorized to update');
       }
 
       return updatedPage;
@@ -51,15 +52,17 @@ class PageDAO {
   }
 
   /**
-   * Deletes a page from the database
-   * @param {string} pageId - ID of the page to delete
-   * @returns {Promise<boolean>} - true if the page was deleted, false otherwise
+   * Deletes a page.
+   * @param {String} pageId - ID of the page to delete.
+   * @param {String} userId - ID of the user deleting the page.
+   * @returns {Promise<Boolean>} - True if the page was deleted successfully.
+   * @throws {Error} If the page could not be deleted.
    */
-  async deletePage(pageId) {
+  async deletePage(pageId, userId) {
     try {
-      const deletedPage = await Page.findOneAndDelete({ page_id: pageId });
+      const deletedPage = await Page.findOneAndDelete({ page_id: pageId, author: userId });
       if (!deletedPage) {
-        throw new Error('Page not found');
+        throw new Error('Page not found or not authorized to delete');
       }
       return true;
     } catch (error) {
@@ -68,24 +71,24 @@ class PageDAO {
   }
 
   /**
-   * Retrieves all approved pages of a community
-   * @param {string} communityId - ID of the community to retrieve the pages of
-   * @returns {Promise<Page[]>} - The approved pages of the community
-   * @throws {Error} - If an error occurs while fetching the pages
+   * Gets all approved pages of a community.
+   * @param {String} communityId - ID of the community to get pages from.
+   * @returns {Promise<Page[]>} - Array of approved pages.
+   * @throws {Error} If error occurs while getting pages.
    */
-  async getPageByCommunity(communityId) {
+  async getPagesByCommunity(communityId) {
     try {
-      return await Page.find({ community_id: communityId, page_state: 'APPROVED' });
+      return await Page.find({ community_id: communityId, page_status: 'APPROVED' });
     } catch (error) {
       throw new Error('Error getting pages by community: ' + error.message);
     }
   }
 
   /**
-   * Retrieves a page by its ID
-   * @param {string} pageId - ID of the page to retrieve
-   * @returns {Promise<Page>} - The page with the given ID
-   * @throws {Error} - If an error occurs while fetching the page
+   * Gets a page by its ID.
+   * @param {String} pageId - ID of the page to get.
+   * @returns {Promise<Page>} - The page document if found.
+   * @throws {Error} If the page could not be fetched.
    */
   async getPageById(pageId) {
     try {
@@ -96,66 +99,34 @@ class PageDAO {
   }
 
   /**
-   * Retrieves all pending pages
-   * @returns {Promise<Page[]>} - The pending pages
-   * @throws {Error} - If an error occurs while fetching the pages
+   * Retrieves all pending pages of all communities.
+   * @returns {Promise<CommunityPages[]>} - Array of pending community pages.
+   * @throws {Error} If an error occurs while fetching the pending pages.
    */
   async getPendingPages() {
     try {
-      return await CommunityPage.find({ page_status: 'PENDING' });
+      return await CommunityPages.find({ page_status: 'PENDING' });
     } catch (error) {
       throw new Error('Error getting pending pages: ' + error.message);
     }
   }
 
   /**
-   * Adds a page to a community's pending pages list
-   * @param {string} communityId - The unique id of the community to add the page to
-   * @param {string} pageId - The unique id of the page to add
-   * @returns {Promise<object>} - The updated community page or an error message
-   * @throws {Error} - If an error occurs while updating the community
+   * Approves a pending page to be added to a community.
+   * @param {String} communityId - ID of the community to add the page to.
+   * @param {String} pageId - ID of the page to add.
+   * @param {String} adminId - ID of the admin approving the page.
+   * @returns {Promise<CommunityPages>} - The updated community page document with the approved status.
+   * @throws {Error} If an error occurs while approving the page.
    */
-  async addUserToPendingPages(communityId, pageId) {
-    try {
-      const existingPage = await CommunityPage.findOne({
-        community_id: communityId,
-        page_id: pageId,
-      });
-
-      if (existingPage) {
-        console.log(`page with ID: ${pageId} is already in community with ID: ${communityId}`);
-        return {
-          message: `page is already approved.`,
-          communityPage: existingPage,
-        };
-      }
-      const communityPageEntry = new CommunityPages({
-        page_id: pageId,
-        community_id: communityId,
-        page_status: 'PENDING',
-      });
-      return await communityPageEntry.save();
-    } catch (error) {
-      console.error('Error adding page to pending pages:', error);
-      throw new Error('Error adding page to pending pages: ' + error.message);
-    }
-  }
-
-  /**
-   * Approves a page to be added to a community
-   * @param {string} communityId - The unique id of the community to add the page to
-   * @param {string} pageId - The unique id of the page to add
-   * @param {string} admin_id - The unique id of the admin who is approving the page
-   * @returns {Promise<Community>} - The updated community or an error message
-   * @throws {Error} - If an error occurs while updating the community
-   */
-  async approvePageToAddCommunity(communityId, pageId, admin_id) {
+  async approvePageToAddCommunity(communityId, pageId, adminId) {
     try {
       const updatedCommunityPage = await CommunityPages.findOneAndUpdate(
-        { community_id: communityId, page_id: { $in: pageId }, page_state: 'PENDING' },
-        { $set: { page_state: 'APPROVED', approved_by: admin_id } },
+        { community_id: communityId, page_id: pageId, page_status: 'PENDING' },
+        { $set: { page_status: 'APPROVED', approved_by: adminId } },
         { new: true }
       );
+
       if (!updatedCommunityPage) {
         throw new Error(`No pending page found in community with ID: ${communityId}`);
       }
@@ -165,48 +136,46 @@ class PageDAO {
         { $addToSet: { pages: pageId }, $inc: { page_count: 1 } },
         { new: true }
       );
+
       if (!community) {
         throw new Error(`Community not found with ID: ${communityId}`);
       }
-      if (!updatePageCommunities) {
-        throw new Error(`Page not found with ID: ${pageId}`);
-      }
 
       console.log('Successfully approved page:', { communityId, pageId });
-      return community;
+      return updatedCommunityPage; // Return the updated community page entry
     } catch (error) {
-      throw new Error(`Error approving page to add community: ` + error.message);
+      throw new Error(`Error approving page to add to community: ${error.message}`);
     }
   }
 
   /**
-   * Rejects a page to be added to a community
-   * @param {string} communityId - The unique id of the community to reject the page from
-   * @param {string} pageId - The unique id of the page to reject
-   * @param {string} admin_id - The unique id of the admin who is rejecting the page
-   * @returns {Promise<CommunityPage>} - The updated community page or an error message
-   * @throws {Error} - If an error occurs while rejecting the page
+   * Rejects a pending page to be added to a community.
+   * @param {String} communityId - ID of the community to reject the page from.
+   * @param {String} pageId - ID of the page to reject.
+   * @param {String} adminId - ID of the admin rejecting the page.
+   * @returns {Promise<CommunityPages>} - The updated community page document with the rejected status.
+   * @throws {Error} If an error occurs while rejecting the page.
    */
-  async rejectPageToAddCommunity(communityId, pageId, admin_id) {
+  async rejectPageToAddCommunity(communityId, pageId, adminId) {
     try {
       return await CommunityPages.findOneAndUpdate(
         { community_id: communityId, page_id: pageId },
-        { $set: { page_state: 'REJECTED', admin_id: admin_id } },
+        { $set: { page_status: 'REJECTED', approved_by: adminId } },
         { new: true }
       );
     } catch (error) {
-      throw new Error('Error rejecting page to add community: ' + error.message);
+      throw new Error('Error rejecting page: ' + error.message);
     }
   }
 
   /**
-   * Removes a page from a community
-   * @param {string} communityId - The unique id of the community to remove the page from
-   * @param {string} pageId - The unique id of the page to remove
-   * @param {string} userId - The id of the user who is removing the page
-   * @param {boolean} isAdmin - Whether the user is an admin or not
-   * @returns {Promise<Object>} - The result of the removal, including a message
-   * @throws {Error} - If an error occurs while removing the page
+   * Removes a page from a community.
+   * @param {String} communityId - ID of the community to remove the page from.
+   * @param {String} pageId - ID of the page to remove.
+   * @param {String} userId - ID of the user removing the page.
+   * @param {Boolean} isAdmin - Whether the user is an admin or not.
+   * @returns {Promise<Object>} - An object containing a success message if the page is removed successfully.
+   * @throws {Error} If an error occurs while removing the page.
    */
   async removePageFromCommunity(communityId, pageId, userId, isAdmin) {
     try {
@@ -231,7 +200,8 @@ class PageDAO {
 
       console.log('Successfully removed page from community:', { communityId, pageId });
 
-      if (Page.author.toString() !== userId && !isAdmin) {
+      const page = await Page.findOne({ page_id: pageId });
+      if (page.author.toString() !== userId && !isAdmin) {
         throw new Error(`User with ID: ${userId} is not authorized to remove this page.`);
       }
 
@@ -239,7 +209,7 @@ class PageDAO {
       await CommunityPages.findOneAndDelete({ page_id: pageId });
 
       console.log('Successfully removed page from community');
-      return { message: `Page removed from community successfully` };
+      return { message: 'Page removed from community successfully' };
     } catch (error) {
       throw new Error('Error removing page from community: ' + error.message);
     }

@@ -5,6 +5,7 @@ const AuthMiddleware = require('../middlewares/auth.middleware');
 const checkRole = require('../middlewares/role.middleware');
 const { checkOwnership } = require('../middlewares/checkOwnership.middleware');
 const Community = require('../db/models/communityModel');
+const PageController = require('../controllers/page.controller');
 const router = express.Router();
 
 // Route to create a new community
@@ -76,10 +77,41 @@ router.delete('/:community_id/users/:user_id',
   CommunityController.removeUserFromCommunity
 );
 
+// Route to get pages by community
+router.get('/:community_Id/pages',
+  AuthMiddleware(),
+  checkPermissions(['VIEW_PAGE', 'VIEW_COMMUNITY']),
+  PageController.getPagesByCommunity);
+
+router.delete('/:community_id/pages/:page_id',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  checkPermissions(['REMOVE_PAGE_FROM_COMMUNITY']),
+  PageController.removePageFromCommunity);
+
 // Route to get users of a community
 router.get('/:communityId/users',
   AuthMiddleware(),
   CommunityController.getCommunityUsers
 );
+//create page in community
+router.post('/:community_id',
+  AuthMiddleware(),
+  checkPermissions(['CREATE_PAGE']),
+  PageController.createPage);
+
+// Route to approve a page
+router.post('/:community_id/approve/:page_id',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  checkPermissions(['APPROVE_PAGE']),
+  PageController.approvePage);
+
+router.post('/:community_id/reject/:PAGE_ID',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  checkPermissions(['REJECT_PAGE']),
+  PageController.rejectPage);
+
 
 module.exports = router;

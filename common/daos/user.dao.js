@@ -1,3 +1,4 @@
+const { userPermissionsEnum } = require('../../db/models/permissionsEnum');
 const { User } = require('../../db/models/userModel');
 
 class UserDao {
@@ -9,8 +10,10 @@ class UserDao {
    */
   async createUser(userData) {
     try {
-      console.log(userData);
-      const user = new User(userData);
+      const user = new User({
+        ...userData,
+        permissions: userPermissionsEnum
+      });
 
       return await user.save();
     } catch (error) {

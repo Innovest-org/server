@@ -1,23 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const { v4: uuidv4 } = require('uuid');
-
-const permissionsEnum = [
-  "CREATE_USER_OR_ADMIN",
-  "DELETE_USER_OR_ADMIN",
-  "UPDATE_USER_OR_ADMIN",
-  "VIEW_USER_OR_ADMIN",
-  "MANAGE_ROLES_OF_ADMIN",
-  "CREATE_COMMUNITY",
-  "DELETE_COMMUNITY",
-  "UPDATE_COMMUNITY",
-  "VIEW_COMMUNITY",
-  "JOIN_COMMUNITY",
-  "VIEW_ALL_COMMUNITIES",
-  "APPROVE_USER",
-  "REJECT_USER",
-  "REMOVE_USER_FROM_COMMUNITY",
-];
+const { adminPermissionsEnum } = require('./permissionsEnum');
 
 const AdminSchema = new Schema(
   {
@@ -43,7 +27,7 @@ const AdminSchema = new Schema(
     },
     permissions: {
       type: [String],
-      enum: permissionsEnum,
+      enum: adminPermissionsEnum,
       default: ['CREATE_USER_OR_ADMIN'],
     },
     approved_pages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Page' }],

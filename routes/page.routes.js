@@ -1,91 +1,37 @@
 const express = require('express');
-const pageController = require('../controllers/page.controller');
-const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const checkRole = require('../middlewares/role.middleware');
-const { checkOwnership } = require('../middlewares/checkOwnership.middleware');
-
 const router = express.Router();
+const PageController = require('../controllers/page.controller');
+const AuthMiddleware = require('../middlewares/auth.middleware');
+const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
+const checkRole = require('../middlewares/role.middleware');
 
-let io; // Declare the Socket.IO instance
 
-// Route to create a new page
-router.post('/',
-  AuthMiddleware(),
-  checkPermissions(['CREATE_PAGE']),
-  (req, res) => pageController(io).createPage(req, res)
-);
+// Route to create a page
 
-// Route to update an existing page
-router.put('/:page_id',
+// Route to update a page
+router.put('/:pageId',
   AuthMiddleware(),
   checkPermissions(['UPDATE_PAGE']),
-  (req, res) => pageController(io).updatePage(req, res)
-);
+  PageController.updatePage);
 
 // Route to delete a page
-router.delete('/:page_id',
+router.delete('/:pageId',
   AuthMiddleware(),
-  checkPermissions(['DELETE_PAGE']),
-  (req, res) => pageController(io).deletePage(req, res)
-);
+  checkPermissions(['DELETE_PAGE']), 
+  PageController.deletePage);
 
-// Route to get a page by id
-router.get('/:page_id',
+// Route to get a page by ID
+router.get('/:pageId',
   AuthMiddleware(),
   checkPermissions(['VIEW_PAGE']),
-  (req, res) => pageController(io).getPageById(req, res)
-);
-
-// Route to get all pages
-router.get('/',
-  AuthMiddleware(),
-  checkPermissions(['VIEW_PAGE']),
-  (req, res) => pageController(io).getAllPages(req, res)
-);
+  PageController.getPageById);
 
 // Route to get all pending pages
 router.get('/pending',
   AuthMiddleware(),
-  checkPermissions(['VIEW_PAGE']),
-  (req, res) => pageController(io).getPendingPages(req, res)
-);
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  PageController.getPendingPages);
 
-// Route to add a page to pending pages
-router.post('/:page_id/pending',
-  AuthMiddleware(),
-  checkRole(['SUPER_ADMIN', 'ADMIN']),
-  checkPermissions(['PENDING_PAGE']),
-  (req, res) => pageController(io).addPageToPending(req, res)
-);
 
-// Route to approve a page
-router.post('/:page_id/approve',
-  AuthMiddleware(),
-  checkRole(['SUPER_ADMIN', 'ADMIN']),
-  checkPermissions(['APPROVE_PAGE']),
-  (req, res) => pageController(io).approvePageToAddCommunity(req, res)
-);
 
-// Route to reject a page
-router.delete('/:page_id/reject',
-  AuthMiddleware(),
-  checkRole(['SUPER_ADMIN', 'ADMIN']),
-  checkPermissions(['REJECT_PAGE']),
-  (req, res) => pageController(io).rejectPageToAddCommunity(req, res)
-);
-
-// Route to remove a page from a community
-router.delete('/:page_id/remove',
-  AuthMiddleware(),
-  checkRole(['SUPER_ADMIN', 'ADMIN']),
-  checkPermissions(['REMOVE_PAGE']),
-  (req, res) => pageController(io).removePageFromCommunity(req, res)
-);
-
-module.exports = {
-  router,
-  setIoInstance: (socketIo) => {
-    io = socketIo; // Set the Socket.IO instance
-  }
-};
+module.exports = router;

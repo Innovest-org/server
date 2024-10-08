@@ -2,24 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const { v4: uuidv4 } = require('uuid');
 const uniqueValidator = require('mongoose-unique-validator');
-
-const permissionsEnum = [
-  "DELETE_USER",
-  "UPDATE_USER",
-  "VIEW_USER",
-  "JOIN_COMMUNITY",
-  "VIEW_COMMUNITY",
-  "REMOVE_USER_FROM_COMMUNITY",
-  "CREATE_PAGE",
-  "UPDATE_PAGE",
-  "DELETE_PAGE",
-  "VIEW_PAGE",
-  "COMMENT_ON_PAGE",
-  "VIEW_LIKES",
-  "VIEW_COMMENTS",
-  "LIKE_PAGE",
-  "DISLIKE_PAGE",
-];
+const { userPermissionsEnum } = require('./permissionsEnum');
 
 const userSchema = new Schema(
   {
@@ -59,7 +42,7 @@ const userSchema = new Schema(
     },
     permissions: {
         type: [String],
-        enum: permissionsEnum,
+        enum: userPermissionsEnum,
         default: [
           'UPDATE_USER',
           'VIEW_USER',
