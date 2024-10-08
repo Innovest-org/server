@@ -10,9 +10,9 @@ const CommunityPagesSchema = new mongoose.Schema({
         default: 'PENDING',
     },
     is_featured: { type: Boolean, default: false },
-    admin: { type: String, ref: 'Admin' }, // admin who created this association
-    approved_by: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' }, // admin who approved the page
-    visibility: { type: Boolean, default: true },
+    admin: { type: String, ref: 'Admin' },
+    approved_by: { type: String, ref: 'Admin' }, // admin who approved the page
+    visibility: { type: Boolean, default: false },
 }, { timestamps: true });
 
 CommunityPagesSchema.index({ community_id: 1, page_id: 1 }, { unique: true });

@@ -17,9 +17,7 @@ const pageSchema = new mongoose.Schema({
   likes: { type: Number, default: 0 },
   views: { type: Number, default: 0 },
   tags: [{ type: String }],
-
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  admin_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
+  author: { type: String, ref: 'User'},
 }, {
   timestamps: true,
   toJSON: { virtuals: true },
