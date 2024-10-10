@@ -113,5 +113,23 @@ router.post('/:community_id/reject/:PAGE_ID',
   checkPermissions(['REJECT_PAGE']),
   PageController.rejectPage);
 
+// Route to update a page
+router.put('/:community_id/:page_id',
+  AuthMiddleware(),
+  checkPermissions(['UPDATE_PAGE']),
+  PageController.updatePage);
+
+
+// Route to delete a page
+router.delete('/:community_id/:page_id',
+  AuthMiddleware(),
+  checkPermissions(['DELETE_PAGE']), 
+  PageController.deletePage);
+
+// Route to get a page by ID
+router.get('/:community_id/:page_id',
+  AuthMiddleware(),
+  checkPermissions(['VIEW_PAGE']),
+  PageController.getPageById);
 
 module.exports = router;

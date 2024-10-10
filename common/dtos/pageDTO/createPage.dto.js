@@ -15,7 +15,7 @@ class CreatePageDTO {
   }
 
   validate() {
-    if (!this.title || !this.content || !this.page_url || !this.author || !this.admin_id) {
+    if (!this.title || !this.content || !this.author || !this.admin_id) {
       throw new Error('Title, content, page_url, author, and admin_id are required fields.');
     }
   }

@@ -30,9 +30,16 @@ class PageDAO {
    * @returns {Promise<Page>} - The updated page document.
    */
   async updatePage(pageId, pageData, userId) {
+    const page = await Page.findOne({ page_id: pageId, author: userId });
+    if (!page) {
+      throw new Error('Page not found');
+    }
     const { error } = validateUpdatePage(pageData);
     if (error) {
       throw new Error(error.details[0].message);
+    }
+    if (page.author !== userId) {
+      throw new Error('Not authorized to update this page');
     }
     try {
       const updatedPage = await Page.findOneAndUpdate(
@@ -58,17 +65,33 @@ class PageDAO {
    * @returns {Promise<Boolean>} - True if the page was deleted successfully.
    * @throws {Error} If the page could not be deleted.
    */
-  async deletePage(pageId, userId) {
+  async deletePage(pageId, userId, communityId) {
     try {
       const deletedPage = await Page.findOneAndDelete({ page_id: pageId, author: userId });
+
       if (!deletedPage) {
         throw new Error('Page not found or not authorized to delete');
       }
+
+      const community = await Community.findOneAndUpdate(
+        { community_id: communityId }, 
+        { 
+          $pull: { pages: pageId },
+          $inc: { page_count: -1 }
+        }, 
+        { new: true }
+      );
+  
+      if (!community) {
+        throw new Error('Community not found');
+      }
+  
       return true;
     } catch (error) {
       throw new Error('Error deleting page: ' + error.message);
     }
   }
+
 
   /**
    * Gets all approved pages of a community.
@@ -93,6 +116,7 @@ class PageDAO {
   async getPageById(pageId) {
     try {
       return await Page.findOne({ page_id: pageId });
+
     } catch (error) {
       throw new Error('Error getting page by ID: ' + error.message);
     }

@@ -3,7 +3,7 @@ const pageRoutes = require('../routes/page.routes');
 const router = express.Router();
 
 const pageModule = () => {
-  router.use('/pages', pageRoutes);
+  router.use('/community', pageRoutes);
   return router;
 };
 
