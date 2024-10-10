@@ -7,7 +7,7 @@ const pageSchema = new mongoose.Schema({
   content: { type: String, required: true },
   location: { type: String, required: false },
   images_url: { type: [String], default: [] },
-  page_url: { type: String, required: true },
+  page_url: { type: String },
   start_time: { type: Date, required: false },
   end_time: { type: Date, required: false },
   page_type: {

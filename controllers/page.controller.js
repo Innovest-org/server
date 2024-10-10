@@ -46,12 +46,21 @@ class PageController {
   async updatePage(req, res) {
     try {
       const userId = req.user.id;
-      const pageId = req.params.pageId;
-      const pageData = req.body; // Updated page data from request body
-      const updatedPage = await PageService.updatePage(pageId, pageData, userId);
-      const adminId = community.admins[0];
-      const page = await PageService.createPage(pageData, communityId, userId, adminId);
-      getIo().to(communityId).emit('newUpdatedPage', updatedPage);
+      const { community_id, page_id } = req.params;
+      const pageData = req.body;
+
+      if (!community_id || !page_id) {
+        return res.status(400).json({ message: 'Missing required parameters' });
+      }
+  
+      const updatedPage = await PageService.updatePage(page_id, pageData, userId);
+  
+      if (!updatedPage) {
+        return res.status(404).json({ message: 'Page not found or you are not authorized to update this page' });
+      }
+  
+      getIo().to(community_id).emit('newUpdatedPage', updatedPage);
+  
       return res.status(200).json({ message: 'Page updated successfully', updatedPage });
     } catch (error) {
       return res.status(500).json({ message: error.message });
@@ -68,14 +77,25 @@ class PageController {
   async deletePage(req, res) {
     try {
       const userId = req.user.id;
-      const pageId = req.params.pageId;
-      await PageService.deletePage(pageId, userId);
-      return res.status(204).send();
+      const pageId = req.params.page_id;
+      const communityId = req.params.community_id;
+      const page = await Page.findOne({ page_id: pageId });
+  
+      if (!page) {
+        return res.status(404).json({ message: 'Page not found' });
+      }
+  
+      if (page.author !== userId) {
+        return res.status(403).json({ message: 'Not authorized to delete this page' });
+      }
+  
+      await PageService.deletePage(pageId, userId, community_id);
+  
+      return res.status(204).send({ message: "Deleted successfully"});
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: `Error deleting page: ${error.message}` });
     }
   }
-
   /**
    * Retrieves a page by its ID.
    * @param {Object} req - The HTTP request object containing the page ID in the params.
@@ -84,13 +104,19 @@ class PageController {
    */
   async getPageById(req, res) {
     try {
-      const pageId = req.params.pageId;
+      const pageId = req.params.page_id;
       const page = await PageService.getPageById(pageId);
+
+      if (!page) {
+        return res.status(404).json({ message: 'Page not found' });
+      }
+
       return res.status(200).json(page);
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: `Error getting page by ID: ${error.message}` });
     }
   }
+  
 
   /**
    * Retrieves all pending pages.

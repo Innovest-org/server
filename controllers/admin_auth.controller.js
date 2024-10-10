@@ -1,6 +1,7 @@
 const AdminAuthServices = require('../services/admin_auth.service');
 const RegisterDTO = require('../common/dtos/auth/register_admin.dto');
 const LoginDTO = require('../common/dtos/auth/login.dto');
+const Admin = require('../db/models/adminModel')
 
 class AdminAuthController {
   async register(req, res) {
@@ -33,16 +34,21 @@ class AdminAuthController {
     const { username_or_email, password } = req.body;
     const loginDTO = new LoginDTO(username_or_email, password);
 
+    const user = await Admin.findOne({ email : username_or_email })
+    if (!user) {
+        throw new Error('User not found');
+    }
+    console.log(user);
+
     const validationError = loginDTO.isValid();  // to capture validation error
     if (validationError) {
         return res.status(400).json({ message: validationError });
     }
-    
     try {
         const token = await AdminAuthServices.login(username_or_email, password);
         res.status(200)
             .cookie('token', token, { httpOnly: false, sameSite: 'none', secure: true })
-            .json({ message: 'Login successful' });
+            .json({ message: 'Login successful', user });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }

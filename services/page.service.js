@@ -54,10 +54,6 @@ class PageService {
       const page = await PageDAO.updatePage(pageId, pageData, userId);
       const communityPage = await CommunityPages.findOne({ page_id: pageId });
 
-      if (communityPage && page.approved) {
-        // socketIO.getIO().to(communityPage.community_id).emit('page_updated', page);
-      }
-
       return page;
     } catch (error) {
       throw new Error('Error updating page: ' + error.message);
@@ -71,27 +67,16 @@ class PageService {
    * @returns {Promise<Boolean>} - True if the page was deleted successfully.
    * @throws {Error} - If the page could not be deleted.
    */
-  async deletePage(pageId, userId) {
+  async deletePage(pageId, userId, community_id) {
     try {
-      const deleted = await PageDAO.deletePage(pageId, userId);
+      const deleted = await PageDAO.deletePage(pageId, userId, community_id);
       const communityPage = await CommunityPages.findOne({ page_id: pageId });
-
-      if (communityPage) {
-        // socketIO.getIO().to(communityPage.community_id).emit('page_deleted', pageId);
-      }
 
       return deleted;
     } catch (error) {
       throw new Error('Error deleting page: ' + error.message);
     }
   }
-
-  /**
-   * Retrieves a page by its ID.
-   * @param {String} pageId - The ID of the page to retrieve.
-   * @returns {Promise<Page>} - The retrieved page document.
-   * @throws {Error} - If an error occurs while retrieving the page.
-   */
 
   /**
    * Retrieves a page by its ID.
