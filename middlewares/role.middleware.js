@@ -1,5 +1,6 @@
 const { User } = require('../db/models/userModel');
 const Admin = require('../db/models/adminModel');
+const AdminService = require('../services/admin.service');
 
 const checkRole = (roles) => {
     return async (req, res, next) => {
@@ -9,10 +10,11 @@ const checkRole = (roles) => {
             }
 
             const userId = req.user.id;
-            console.log('User ID:', userId,)
-            let user;
+            console.log('User ID:', userId);
+            let user = null;
             if (req.user.role === 'ADMIN' || req.user.role === 'SUPER_ADMIN') {
-                user = await Admin.findOne({ admin_id: userId });
+                // user = await Admin.findOne({ admin_id: userId });
+                user = await AdminService.getAdminByID(userId);
                 if (!user) {
                     console.log('User not found in Admin collection');
                 }

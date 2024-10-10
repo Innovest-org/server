@@ -6,7 +6,6 @@ class AdminAuthController {
   async register(req, res) {
     const { username, email, password } = req.body;
     const registerDTO = new RegisterDTO(username, email, password);
-
     if (!registerDTO.isValid()) {
       return res.status(400).json({ message: 'Invalid registration data' });
     }

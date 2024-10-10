@@ -9,7 +9,6 @@ class UserDao {
    */
   async createUser(userData) {
     try {
-      console.log(userData);
       const user = new User(userData);
 
       return await user.save();
@@ -127,6 +126,47 @@ class UserDao {
       throw new Error('Error fetching user: ' + error.message);
     }
   }
+
+  async resetPassword(userId, password , need_password_reset) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { id: userId },
+        { password: password, password_reset: need_password_reset },
+        { new: true, runValidators: true },
+      )
+    } catch (error) {
+      throw new Error('Error updating user: ' + error.message);
+    }
+  }
+
+  async approveUser(userId , randomPassword) {
+    try {
+      const user = await User.findOneAndUpdate(
+        {id : userId},
+        {password : randomPassword , status : 'APPROVED' , need_reset_password : true},
+        {new : true , runValidators : true}
+      )
+      return user;
+    }
+    catch (error) {
+      throw new Error('Error approving user: ' + error.message);
+    }
+  }
+
+  async rejectUser(userId) {
+    try {
+      const user = await User.findOneAndUpdate(
+        {id : userId},
+        {status : 'REJECTED'},
+      )
+      user.delete();
+    }
+    catch (error) {
+      throw new Error('Error rejecting user: ' + error.message);
+    }
+  }
+
+
 }
 
 module.exports = new UserDao();

@@ -1,5 +1,5 @@
 const userDao = require('../common/daos/user.dao');
-
+const randomPasswordService = require('./random_password.service');
 
 class UserServices {
   /**
@@ -71,6 +71,16 @@ class UserServices {
       throw new Error('Error fetching user:' + error.message);
     }
   }
+
+  async approveUser(userId) {
+    try {
+      const randomPasswordGenerator = new randomPasswordService(15);
+      const password = await randomPasswordGenerator.generateRandomPassword();
+      return await userDao.approveUser(userId , password);
+    } catch (error) {
+      throw new Error('Error approving user: ' + error.message);
+    }
+  } 
 }
 
 module.exports = new UserServices();

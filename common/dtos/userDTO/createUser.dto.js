@@ -7,7 +7,7 @@ class CreateUserDTO {
     this.email = user.email;
     this.phone = user.phone;
     this.country = user.country;
-    this.password = user.password || null;
+    // this.password = user.password || null;
     this.user_background = user.user_background || null;
     this.experience = user.experience || null;
     this.investment_preferences = user.investment_preferences || [];

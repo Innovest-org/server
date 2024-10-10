@@ -6,7 +6,6 @@ class RegisterUserDTO {
         this.last_name = data.last_name;
         this.username = data.username;
         this.email = data.email;
-        this.password = data.password;
         this.phone = data.phone;
         this.role = data.role;
         this.country = data.country;
@@ -24,8 +23,7 @@ class RegisterUserDTO {
             .email()
             .required(),
         password: Joi.string()
-            .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
-            .required() ,
+            .min(0).max(0) ,
         first_name: Joi.string()
             .min(3)
             .max(30)

@@ -64,6 +64,22 @@ class UserController {
       res.status(400).json({ message: error.message });
     }
   }
+
+  async verifyOtp(req, res) {
+
+  }
+  async approveUser(req, res) {
+      const {userId} = req.body;
+      try {
+        await UserService.approveUser(userId);
+        res.status(200).json({message: 'User approved successfully'});
+      } catch (error) {
+        res.status(400).json({message: error.message});
+      }
+  }
+  async rejectRegisteredUser(req, res) {
+    
+  }
 }
 
 module.exports = new UserController();

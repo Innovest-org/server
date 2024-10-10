@@ -81,6 +81,16 @@ const userSchema = new Schema(
     // Messages
     messages_sent: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
     messages_received: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
+
+    // status for approval of user
+    status: {
+      type: String,
+      enum: ['APPROVED', 'PENDING', 'REJECTED'],
+      default: 'PENDING',
+    } , 
+
+    // need password reset
+    password_reset: { type: Boolean, default: false },
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );

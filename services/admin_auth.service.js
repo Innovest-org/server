@@ -74,6 +74,7 @@ class AdminAuthServices {
             // if (password !== user.password) {
             //     throw new Error('Invalid password');
             // }
+            console.log(user)
             const payload = {
                 user: {
                     id: user.admin_id,

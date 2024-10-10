@@ -4,6 +4,7 @@ const UserController = require('../controllers/user.controller');
 const { checkPermissions } = require('../middlewares/checkPermissions.middleware');
 const AuthMiddleware = require('../middlewares/auth.middleware');
 const checkRole = require('../middlewares/role.middleware');
+const AdminAuthController = require('../controllers/admin_auth.controller');
 
 const router = express.Router();
 var multer = require('multer')
@@ -12,7 +13,12 @@ var multParse = multer()
 
 router.post('/register' , multParse.any(),  UserAuthController.register);
 router.post('/login', UserAuthController.login);
-
+router.get('/logout', AdminAuthController.logout);
+router.post('/forget' , UserAuthController.forgetPassword);
+router.post('/updatePassword' , UserAuthController.updatePassword);
+router.post('/approve' , AuthMiddleware() ,
+  checkRole(['SUPER_ADMIN' , 'ADMIN']),
+  UserController.approveUser);
 // User Management Operations
 router.get('/' ,
   AuthMiddleware(),
@@ -37,5 +43,7 @@ router.put('/:id',
   checkRole(['SUPER_ADMIN', "ADMIN", 'ENTREPRENEUR', 'INVESTOR']),
   checkPermissions(['UPDATE_USER']),
   UserController.updateUser);
+
+
 
 module.exports = router;

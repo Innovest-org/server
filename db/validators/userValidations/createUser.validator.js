@@ -19,6 +19,7 @@ const createUserValidationSchema = Joi.object({
   investment_preferences: Joi.array().items(Joi.string()).optional(),
   user_languages: Joi.array().items(Joi.string()).optional(),
   user_interests: Joi.array().items(Joi.string()).optional(), 
+  status: Joi.string().valid('PENDING', 'APPROVED', 'REJECTED').default('PENDING'),
 });
 
 module.exports = { createUserValidationSchema };
