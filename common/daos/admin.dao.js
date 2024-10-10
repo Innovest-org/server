@@ -71,7 +71,7 @@ class AdminDao {
    */
   async getAllAdmins() {
     try {
-      return await Admin.find({ role: { $in: ['ADMIN', 'SUPER_ADMIN'] } });
+      return await Admin.find({ role: 'ADMIN'});
     } catch (error) {
       throw new Error('Error fetching users: ' + error.message);
     }

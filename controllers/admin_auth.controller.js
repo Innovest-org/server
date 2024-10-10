@@ -41,7 +41,7 @@ class AdminAuthController {
     try {
         const token = await AdminAuthServices.login(username_or_email, password);
         res.status(200)
-            .cookie('token', token, { httpOnly: true })
+            .cookie('token', token, { httpOnly: false, sameSite: 'none', secure: true })
             .json({ message: 'Login successful' });
     } catch (error) {
         res.status(400).json({ message: error.message });

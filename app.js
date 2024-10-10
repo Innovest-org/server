@@ -8,17 +8,29 @@ const communityModule = require("./modules/community.module");
 const { dbConection } = require("./config/db");
 const bodyParser = require('body-parser');
 const http = require('http');
-const socketConfig = require('./config/socket'); // renamed to avoid confusion
+const socketConfig = require('./config/socket');
 
 dotenv.config();
 const app = express();
 const server = http.createServer(app);
-const io = socketConfig.init(server); // Initialize Socket.IO with the server
+const io = socketConfig.init(server);
 
 dbConection();
 
 // Middleware
-app.use(cors());
+const allowedOrigins = ['http://localhost:3000'];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true, 
+}));
+
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
