@@ -78,10 +78,10 @@ router.delete('/:community_id/users/:user_id',
 );
 
 // Route to get pages by community
-router.get('/:community_Id/pages',
+router.get('/:community_id/pages',
   AuthMiddleware(),
   checkPermissions(['VIEW_PAGE', 'VIEW_COMMUNITY']),
-  PageController.getPagesByCommunity);
+  PageController.getCommunityPages);
 
 router.delete('/:community_id/pages/:page_id',
   AuthMiddleware(),
@@ -107,7 +107,7 @@ router.post('/:community_id/approve/:page_id',
   checkPermissions(['APPROVE_PAGE']),
   PageController.approvePage);
 
-router.post('/:community_id/reject/:PAGE_ID',
+router.post('/:community_id/reject/:page_id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   checkPermissions(['REJECT_PAGE']),
@@ -118,7 +118,6 @@ router.put('/:community_id/:page_id',
   AuthMiddleware(),
   checkPermissions(['UPDATE_PAGE']),
   PageController.updatePage);
-
 
 // Route to delete a page
 router.delete('/:community_id/:page_id',

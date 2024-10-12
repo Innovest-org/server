@@ -1,17 +1,17 @@
-const LikeDAO = require('../daos/LikeDAO');
+const LikeDAO = require('../common/daos/like.dao');
 
 class LikeService {
-  async createLike(likeData) {
+  async createLike(pageId, userId) {
     try {
-      return await LikeDAO.createLike(likeData);
+      return await LikeDAO.createLike(pageId, userId);
     } catch (error) {
       throw new Error('Error creating like: ' + error.message);
     }
   }
 
-  async deleteLike(likeId) {
+  async deleteLike(likeId, userId) {
     try {
-      return await LikeDAO.deleteLike(likeId);
+      return await LikeDAO.deleteLike(likeId, userId);
     } catch (error) {
       throw new Error('Error deleting like: ' + error.message);
     }
@@ -25,6 +25,13 @@ class LikeService {
     }
   }
 
+  async hasUserLikedPage(pageId, userId) {
+    try {
+      return await LikeDAO.hasUserLikedPage(pageId, userId);
+    } catch (error) {
+      throw new Error('Error checking like status: ' + error.message);
+    }
+  }
 }
 
-module.exports = LikeService
+module.exports = new LikeService();

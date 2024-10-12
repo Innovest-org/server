@@ -1,6 +1,7 @@
 const UserService = require('../services/user_auth.service');
 const RegisterUserDTO = require('../common/dtos/auth/register_user.dto');
 const LoginDTO = require('../common/dtos/auth/login.dto');
+const { User } = require('../db/models/userModel');
 class UserController {
   /**
    * Registers a new user.
@@ -32,6 +33,11 @@ class UserController {
   async login(req, res) {
     const { username_or_email, password } = req.body;
     const loginDTO = new LoginDTO(username_or_email, password);
+    const user = await User.findOne({ email : username_or_email })
+    if (!user) {
+        throw new Error('User not found');
+    }
+    console.log(user);
     const validationError = loginDTO.isValid();
     if (validationError) {
       return res.status(400).json({ message: 'Invalid login data' });
@@ -41,7 +47,7 @@ class UserController {
       res
         .status(200)
         .cookie('token', token, { httpOnly: true })
-        .json({ message: 'Login successful' });
+        .json({ message: 'Login successful' , user });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

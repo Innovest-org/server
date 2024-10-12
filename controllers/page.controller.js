@@ -2,6 +2,7 @@ const Community = require('../db/models/communityModel');
 const PageService = require('../services/page.service');
 const { getIo } = require('../config/socket');
 const Page = require('../db/models/pageModel');
+const mongoose = require('mongoose');
 
 class PageController {
 
@@ -79,23 +80,27 @@ class PageController {
       const userId = req.user.id;
       const pageId = req.params.page_id;
       const communityId = req.params.community_id;
+
       const page = await Page.findOne({ page_id: pageId });
-  
       if (!page) {
         return res.status(404).json({ message: 'Page not found' });
       }
-  
+
       if (page.author !== userId) {
         return res.status(403).json({ message: 'Not authorized to delete this page' });
       }
-  
-      await PageService.deletePage(pageId, userId, community_id);
-  
-      return res.status(204).send({ message: "Deleted successfully"});
+
+      await PageService.deletePage(pageId, userId, communityId);
+
+      res.status(200).json({
+        message:
+          'Page Deleted.',
+      });
     } catch (error) {
       return res.status(500).json({ message: `Error deleting page: ${error.message}` });
     }
   }
+
   /**
    * Retrieves a page by its ID.
    * @param {Object} req - The HTTP request object containing the page ID in the params.
@@ -139,16 +144,22 @@ class PageController {
    * @param {Object} res - The HTTP response object.
    * @returns {Promise<void>} - Responds with a list of pages or an error message.
    */
-  async getPagesByCommunity(req, res) {
+  async getCommunityPages(req, res) {
     try {
-      const communityId = req.params.communityId;
-      const pages = await PageService.getPagesByCommunity(communityId);
-      return res.status(200).json(pages);
+      const communityId = req.params.community_id;
+
+      const community = await PageService.getPages(communityId);
+
+      return res.status(200).json({
+        pages: community.pages
+      });
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      return res.status(500).json({
+        message: 'Error getting pages by community: ' + error.message
+      });
     }
   }
-
+  
 
   /**
    * Approves a page to be added to a community.
@@ -160,6 +171,7 @@ class PageController {
   async approvePage(req, res) {
     try {
       const { community_id, page_id } = req.params;
+      console.log(community_id);
       const adminId = req.user.id;
       const page = await Page.findOne({ page_id: page_id });
 
@@ -184,10 +196,15 @@ class PageController {
    */
   async rejectPage(req, res) {
     try {
-      const { communityId, pageId } = req.params;
+      const { community_id, page_id } = req.params;
       const adminId = req.user.id;
-      await PageService.rejectPageToAddCommunity(communityId, pageId, adminId);
-      return res.status(204).send(); // No content
+      const rejectedPage = await PageService.rejectPageToAddCommunity(community_id, page_id, adminId);
+      getIo().to(community_id).emit('pageRejected', rejectedPage);
+
+      res.status(200).json({
+        message:
+          'Page has been rejected from adding the community.',
+      });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
@@ -202,11 +219,14 @@ class PageController {
    */
   async removePageFromCommunity(req, res) {
     try {
-      const { communityId, pageId } = req.params;
-      const userId = req.user.id; // Assuming user ID is stored in the request
-      const isAdmin = req.user.role === 'admin'; // Check if user is an admin
-      await PageService.removePageFromCommunity(communityId, pageId, userId, isAdmin);
-      return res.status(204).send(); // No content
+      const { community_id, page_id } = req.params;
+      const userId = req.user.id;
+      const isAdmin = req.user.role === 'admin';
+      await PageService.removePageFromCommunity(community_id, page_id, userId, isAdmin);
+      res.status(204).json({
+        message:
+          'Page removed.',
+      });;
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }
