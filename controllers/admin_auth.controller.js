@@ -38,7 +38,6 @@ class AdminAuthController {
     if (!user) {
         throw new Error('User not found');
     }
-    console.log(user);
 
     const validationError = loginDTO.isValid();  // to capture validation error
     if (validationError) {

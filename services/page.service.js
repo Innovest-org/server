@@ -67,11 +67,9 @@ class PageService {
    * @returns {Promise<Boolean>} - True if the page was deleted successfully.
    * @throws {Error} - If the page could not be deleted.
    */
-  async deletePage(pageId, userId, community_id) {
+  async deletePage(pageId, userId, communityId) {
     try {
-      const deleted = await PageDAO.deletePage(pageId, userId, community_id);
-      const communityPage = await CommunityPages.findOne({ page_id: pageId });
-
+      const deleted = await PageDAO.deletePage(pageId, userId, communityId);
       return deleted;
     } catch (error) {
       throw new Error('Error deleting page: ' + error.message);
@@ -101,6 +99,7 @@ class PageService {
     try {
       return await PageDAO.getPendingPages();
     } catch (error) {
+      console.log(error);
       throw new Error('Error getting pending pages: ' + error.message);
     }
   }
@@ -111,10 +110,11 @@ class PageService {
    * @returns {Promise<Page[]>} - An array of all pages that are part of the community.
    * @throws {Error} - If an error occurs while retrieving the pages.
    */
-  async getPagesByCommunity(communityId) {
+  async getPages(communityId) {
     try {
-      return await PageDAO.getPageByCommunity(communityId);
+      return await PageDAO.getCommunityPages(communityId);
     } catch (error) {
+      console.log(error.message);
       throw new Error('Error getting pages by community: ' + error.message);
     }
   }
@@ -153,14 +153,31 @@ class PageService {
     try {
       const rejectedPage = await PageDAO.rejectPageToAddCommunity(communityId, pageId, adminId);
       const communityPage = await CommunityPages.findOne({ page_id: pageId });
-      
-      // socketIO.getIO().to(communityPage.community_id).emit('page_rejected', rejectedPage);
-      notificationService.notifyUser(rejectedPage.author, 'page_rejected', { pageId });
+  
+      if (!communityPage) {
+        throw new Error('Page not found in the specified community');
+      }
+  
+      // Notify the author of the page rejection
+      if (rejectedPage && rejectedPage.author) {
+        notificationService.notifyUser(
+          rejectedPage.author,
+          'pageRejected',
+          {
+            pageId,
+            communityId,
+            adminId,
+            message: `Your page has been rejected from the community ${communityId}.`
+          }
+        );
+      }
+
       return rejectedPage;
     } catch (error) {
       throw new Error('Error rejecting page: ' + error.message);
     }
   }
+  
 
   /**
    * Removes a page from a community.

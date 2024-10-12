@@ -65,47 +65,48 @@ class PageDAO {
    * @returns {Promise<Boolean>} - True if the page was deleted successfully.
    * @throws {Error} If the page could not be deleted.
    */
-  async deletePage(pageId, userId, communityId) {
-    try {
-      const deletedPage = await Page.findOneAndDelete({ page_id: pageId, author: userId });
-
-      if (!deletedPage) {
-        throw new Error('Page not found or not authorized to delete');
-      }
-
-      const community = await Community.findOneAndUpdate(
-        { community_id: communityId }, 
-        { 
-          $pull: { pages: pageId },
-          $inc: { page_count: -1 }
-        }, 
-        { new: true }
-      );
-  
-      if (!community) {
-        throw new Error('Community not found');
-      }
-  
-      return true;
-    } catch (error) {
-      throw new Error('Error deleting page: ' + error.message);
+async deletePage(pageId, userId, communityId) {
+  try {
+    // Ensure page_id is passed as string and matches DB field type
+    const deletedPage = await Page.findOneAndDelete({ page_id: String(pageId), author: userId });
+    
+    if (!deletedPage) {
+      throw new Error('Page not found or not authorized to delete');
     }
-  }
 
+    const community = await Community.findOneAndUpdate(
+      { community_id: String(communityId) }, 
+      { 
+        $pull: { pages: String(pageId) },
+        $inc: { page_count: -1 }
+      }, 
+      { new: true }
+    );
 
-  /**
-   * Gets all approved pages of a community.
-   * @param {String} communityId - ID of the community to get pages from.
-   * @returns {Promise<Page[]>} - Array of approved pages.
-   * @throws {Error} If error occurs while getting pages.
-   */
-  async getPagesByCommunity(communityId) {
-    try {
-      return await Page.find({ community_id: communityId, page_status: 'APPROVED' });
-    } catch (error) {
-      throw new Error('Error getting pages by community: ' + error.message);
+    if (!community) {
+      throw new Error('Community not found');
     }
+
+    return true;
+  } catch (error) {
+    throw new Error('Error deleting page: ' + error.message);
   }
+}
+
+async getCommunityPages(communityId) {
+  try {
+    const community = await Community.findOne({ community_id: communityId });
+    
+    if (community.length === 0) {
+      throw new Error('No pages found for this community');
+    }
+    
+    return community;
+  } catch (error) {
+    throw new Error('Error getting pages by community: ' + error.message);
+  }
+}
+
 
   /**
    * Gets a page by its ID.

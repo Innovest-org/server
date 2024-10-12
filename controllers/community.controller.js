@@ -209,7 +209,6 @@ class CommunityController {
     }
   }
 
-
   /**
    * Retrieves users of a community
    * @param {Object} req - The request object
