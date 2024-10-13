@@ -3,9 +3,8 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const adminModule = require('./modules/admin.module');
 const userModule = require('./modules/user.module');
-const pageModule = require('./modules/page.module');
 const likeModule = require("./modules/like.module");
-const communityModule = require("./modules/community.module");
+const communityModule = require('./modules/community.module');
 const { dbConection } = require("./config/db");
 const bodyParser = require('body-parser');
 const http = require('http');
@@ -42,7 +41,6 @@ app.use(require('cookie-parser')());
 app.use('/api', adminModule());
 app.use('/api', communityModule());
 app.use('/api', userModule());
-app.use('/api', pageModule());
 app.use('/api', likeModule())
 
 // Socket.IO setup
