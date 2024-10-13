@@ -31,26 +31,28 @@ class LikeDAO {
 
   async deleteLike(likeId, userId) {
     try {
-      const like = await Like.findOneAndDelete({ _id: likeId, user_id: userId });
-      if (!like) {
-        throw new Error('Like not found or not owned by the user');
-      }
+        const like = await Like.findOneAndDelete({ like_id: likeId, user_id: userId });
+        if (!like) {
+            throw new Error('Like not found or not owned by the user');
+        }
 
-      const page = await Page.findOneAndUpdate(
-        { page_id: like.page_id },
-        { $inc: { likes: -1 } },
-        { new: true }
-      );
+        // Update the page's like count
+        const page = await Page.findOneAndUpdate(
+            { page_id: like.page_id },
+            { $inc: { likes: -1 } },
+            { new: true }
+        );
 
-      if (!page) {
-        throw new Error('Page not found');
-      }
+        if (!page) {
+            throw new Error('Page not found');
+        }
 
-      return page;
+        return page;
     } catch (error) {
-      throw new Error('Error deleting like: ' + error.message);
+        throw new Error('Error deleting like: ' + error.message);
     }
-  }
+}
+
 
   async getLikesByPage(pageId) {
     try {
@@ -64,13 +66,13 @@ class LikeDAO {
           };
         })
       );
-  
+
       return populatedLikes;
     } catch (error) {
       throw new Error('Error fetching likes: ' + error.message);
     }
   }
-  
+
 
   async hasUserLikedPage(pageId, userId) {
     try {
