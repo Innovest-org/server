@@ -4,6 +4,13 @@ const PageService = require('../services/page.service');
 const notificationService = require('../services/notification.service');
 
 class LikeController {
+  /**
+   * Creates a new like for a given page by ID and user ID.
+   * @param {Object} req - The HTTP request object containing the page ID in the params.
+   * @param {Object} res - The HTTP response object.
+   * @returns {Promise<void>} - Responds with a 200 status code if successful,
+   * a 500 status code if an error occurred.
+   */
   async createLike(req, res) {
     try {
       const { page_id } = req.params;
@@ -23,6 +30,14 @@ class LikeController {
     }
   }
 
+  /**
+   * Deletes a like identified by the given ID.
+   * @param {Object} req - The HTTP request object containing the like ID and page ID in the params.
+   * @param {Object} res - The HTTP response object.
+   * @returns {Promise<void>} - Responds with a 200 status code if successful,
+   * a 500 status code if an error occurred.
+   * @throws {Error} - If an error occurs while deleting the like.
+   */
   async deleteLike(req, res) {
     try {
         const { like_id, page_id } = req.params;
@@ -50,6 +65,15 @@ class LikeController {
 }
 
 
+  /**
+   * Retrieves all likes for a given page by ID.
+   * @param {Object} req - The HTTP request object containing the page ID in the params.
+   * @param {Object} res - The HTTP response object.
+   * @returns {Promise<void>} - Responds with a list of like objects,
+   * each containing the `user` field with the username
+   *   of the user who made the like.
+   * @throws {Error} - If an error occurs while fetching the likes.
+   */
   async getLikesByPage(req, res) {
     try {
       const { page_id } = req.params;
