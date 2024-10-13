@@ -4,6 +4,13 @@ const PageService = require('../services/page.service');
 const notificationService = require('../services/notification.service');
 
 class LikeController {
+  /**
+   * Creates a new like for a given page by ID and user ID.
+   * @param {Object} req - The HTTP request object containing the page ID in the params.
+   * @param {Object} res - The HTTP response object.
+   * @returns {Promise<void>} - Responds with a 200 status code if successful,
+   * a 500 status code if an error occurred.
+   */
   async createLike(req, res) {
     try {
       const { page_id } = req.params;
@@ -23,26 +30,50 @@ class LikeController {
     }
   }
 
+  /**
+   * Deletes a like identified by the given ID.
+   * @param {Object} req - The HTTP request object containing the like ID and page ID in the params.
+   * @param {Object} res - The HTTP response object.
+   * @returns {Promise<void>} - Responds with a 200 status code if successful,
+   * a 500 status code if an error occurred.
+   * @throws {Error} - If an error occurs while deleting the like.
+   */
   async deleteLike(req, res) {
     try {
-      const { like_id } = req.params;
-      const userId = req.user.id;
+        const { like_id, page_id } = req.params;
+        const userId = req.user.id;
 
-      const hasLiked = await LikeService.hasUserLikedPage(page_id, userId);
-      if (!hasLiked) {
-        return res.status(403).json({ message: 'You can only delete your own like' });
-      }
+        // Check if the user has liked the page
+        const hasLiked = await LikeService.hasUserLikedPage(page_id, userId);
+        if (!hasLiked) {
+            return res.status(403).json({ message: 'You can only delete your own like' });
+        }
 
-      const page = await LikeService.deleteLike(like_id, userId);
+        // Delete the like
+        const page = await LikeService.deleteLike(like_id, userId);
+        if (!page) {
+            return res.status(404).json({ message: 'Like not found' });
+        }
 
-      getIo().to(page_id).emit('like-deleted', { like_id });
+        // Emit the like deletion event
+        getIo().to(page_id).emit('like-deleted', { like_id });
 
-      return res.status(200).json({ message: 'Like deleted successfully' });
+        return res.status(200).json({ message: 'Like deleted successfully' });
     } catch (error) {
-      return res.status(500).json({ message: 'Error deleting like: ' + error.message });
+        return res.status(500).json({ message: 'Error deleting like: ' + error.message });
     }
-  }
+}
 
+
+  /**
+   * Retrieves all likes for a given page by ID.
+   * @param {Object} req - The HTTP request object containing the page ID in the params.
+   * @param {Object} res - The HTTP response object.
+   * @returns {Promise<void>} - Responds with a list of like objects,
+   * each containing the `user` field with the username
+   *   of the user who made the like.
+   * @throws {Error} - If an error occurs while fetching the likes.
+   */
   async getLikesByPage(req, res) {
     try {
       const { page_id } = req.params;

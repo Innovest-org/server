@@ -12,7 +12,7 @@ router.post('/:page_id',
   LikeController.createLike);
 
 // Route to delete a like
-router.delete('/:like_id',
+router.delete('/:page_id/:like_id',
   AuthMiddleware(),
   checkPermissions(['DISLIKE_PAGE']),
   LikeController.deleteLike);

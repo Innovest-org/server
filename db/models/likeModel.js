@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const LikeSchema = new mongoose.Schema({
+    like_id: {
+        type: String,
+        default: () => new mongoose.Types.ObjectId().toString(),
+        unique: true
+    },
     user_id: { type: String, ref: 'User', required: true },
     page_id: { type: String, ref: 'Page', required: true },
 }, { timestamps: true });

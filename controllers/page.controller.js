@@ -129,12 +129,28 @@ class PageController {
    * @param {Object} res - The HTTP response object.
    * @returns {Promise<void>} - Responds with a list of pending pages or an error message.
    */
+  // PageController.js
   async getPendingPages(req, res) {
     try {
-      const pendingPages = await PageService.getPendingPages();
-      return res.status(200).json(pendingPages);
+      const { community_id } = req.params;
+      console.log(`Controller fetching pending pages for community: ${community_id}`);
+      const pendingPages = await PageService.getPendingPages(community_id);
+  
+      if (!pendingPages || pendingPages.length === 0) {
+        console.log('No pending pages found');
+        return res.status(404).json({ message: 'No pending pages found for this community' });
+      }
+  
+      console.log(`Returning ${pendingPages.length} pending pages`);
+      return res.status(200).json({
+        message: 'Pending pages fetched successfully',
+        data: pendingPages,
+      });
     } catch (error) {
-      return res.status(500).json({ message: error.message });
+      console.error('Error in Controller getPendingPages:', error);
+      return res.status(500).json({
+        message: 'Error fetching pending pages: ' + error.message,
+      });
     }
   }
 

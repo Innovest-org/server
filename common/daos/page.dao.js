@@ -128,11 +128,18 @@ async getCommunityPages(communityId) {
    * @returns {Promise<CommunityPages[]>} - Array of pending community pages.
    * @throws {Error} If an error occurs while fetching the pending pages.
    */
-  async getPendingPages() {
+  async getPendingPages(community_id) {
     try {
-      return await CommunityPages.find({ page_status: 'PENDING' });
+      console.log(`Fetching pending pages for community: ${community_id}`);
+      const pendingPages = await CommunityPages.find({
+        page_status: 'PENDING',
+        community_id: community_id,
+      });
+      console.log(`Found ${pendingPages.length} pending pages`);
+      return pendingPages;
     } catch (error) {
-      throw new Error('Error getting pending pages: ' + error.message);
+      console.error('Error in DAO getPendingPages:', error);
+      throw new Error('Error fetching pending pages: ' + error.message);
     }
   }
 
