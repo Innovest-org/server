@@ -247,6 +247,27 @@ class PageController {
       return res.status(500).json({ message: error.message });
     }
   }
+
+  /**
+   * Controller for searching pages.
+   * @param {Request} req - Express request object containing query parameters.
+   * @param {Response} res - Express response object.
+   * @returns {Response} - JSON response with search results.
+   */
+  async searchPages(req, res) {
+    try {
+      const queryParams = req.query;
+      console.log(queryParams) 
+
+      if (!queryParams) {
+        return res.status(400).json({ error: 'Missing query parameters' });
+      }
+      const pages = await PageService.searchPages(queryParams);
+      return res.status(200).json(pages);
+    } catch (error) {
+      return res.status(500).json({ error: 'Error fetching pages: ' + error.message });
+    }
+  }
 }
 
 module.exports = new PageController();

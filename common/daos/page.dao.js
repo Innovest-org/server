@@ -3,6 +3,7 @@ const CommunityPages = require('../../db/models/communityPagesModel');
 const Community = require('../../db/models/communityModel');
 const { validateCreatePage, validateUpdatePage } = require('../../db/validators/pageValidator');
 const { checkMembershipStatus } = require('./community.dao');
+const { User } = require('../../db/models/userModel');
 
 class PageDAO {
   /**
@@ -248,6 +249,39 @@ async getCommunityPages(communityId) {
       throw new Error('Error removing page from community: ' + error.message);
     }
   }
+
+  async searchPages(queryParams) {
+    const { tags, username, title, page_type, order } = queryParams;
+    let searchCriteria = {};
+  
+    if (tags) {
+      searchCriteria.tags = { $in: tags.split(',') };
+    }
+  
+    if (username) {
+      const user = await User.findOne({ username });
+      if (user) {
+        searchCriteria.author = user.id;
+      }
+    }
+  
+    if (title) {
+      searchCriteria.title = { $regex: title, $options: 'i' };
+    }
+  
+    if (page_type) {
+      searchCriteria.page_type = page_type.toUpperCase();
+    }
+  
+    let sortCriteria = { createdAt: -1 };
+  
+    if (order && (order === 'asc' || order === 'desc')) {
+      sortCriteria.createdAt = order === 'asc' ? 1 : -1;
+    }
+  
+    return await Page.find(searchCriteria).sort(sortCriteria);
+  }
+  
 }
 
 module.exports = new PageDAO();

@@ -197,6 +197,19 @@ class PageService {
       throw new Error('Error removing page from community: ' + error.message);
     }
   }
+
+    /**
+   * Search pages based on tags, username, title, page_type, and order.
+   * @param {Object} queryParams - The search filters and order options.
+   * @returns {Promise<Page[]>} - The list of matched pages.
+   */
+    async searchPages(queryParams) {
+      try {
+        return await PageDAO.searchPages(queryParams);
+      } catch (error) {
+        throw new Error('Error in PageService: ' + error.message);
+      }
+    }
 }
 
 module.exports = new PageService();
