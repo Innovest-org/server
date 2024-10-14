@@ -225,6 +225,26 @@ class CommunityController {
       res.status(500).json({ message: error.message });
     }
   }
+
+  /**
+  * Handles the request to search for communities by their name.
+  * @param {Object} req - The request object.
+  * @param {Object} res - The response object.
+  */
+  async searchCommunities(req, res) {
+    try {
+      const { communityNameQuery } = req.query;
+      if (!communityNameQuery) {
+        return res.status(400).json({ message: 'Community name is required' });
+      }
+
+      const communities = await CommunityServices.searchCommunitiesByName(communityNameQuery);
+      res.status(200).json(communities);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: error.message });
+    }
+  }
 }
 
 module.exports = new CommunityController();

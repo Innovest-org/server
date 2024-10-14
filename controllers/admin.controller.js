@@ -93,6 +93,30 @@ class AdminController {
       res.status(500).json({ message: error.message });
     }
   }
+
+  /**
+  * Handles the search request for admins by username.
+  * @param {Object} req - The request object containing the query parameter `usernameQuery`.
+  * @param {Object} res - The response object.
+  */
+  async searchAdmins(req, res) {
+    const { usernameQuery } = req.query;
+    console.log(usernameQuery)
+
+    try {
+      if (!usernameQuery) {
+        return res.status(400).json({ error: 'Username query is required' });
+      }
+
+      const admins = await AdminService.searchAdminsByUsername(usernameQuery);
+      if (!admins.length) {
+        return res.status(404).json({ error: 'No admins found with the given username' });
+      }
+      res.status(200).json(admins);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new AdminController();

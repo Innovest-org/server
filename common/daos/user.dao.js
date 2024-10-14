@@ -130,6 +130,29 @@ class UserDao {
       throw new Error('Error fetching user: ' + error.message);
     }
   }
+
+
+  /**
+   * Searches for users by username.
+   * @param {string} usernameQuery - The username to search for.
+   * @returns {Promise<User[]>} - A list of users that match the search query.
+   * @throws {Error} If the users couldn't be fetched.
+   */
+  async searchUsersByUsername(usernameQuery) {
+    try {
+      const users = await User.find({
+        username: { $regex: usernameQuery, $options: 'i' },
+      });
+
+      if (users.length === 0) {
+        return null; // No users found
+      }
+
+      return users;
+    } catch (error) {
+      throw new Error('Error searching users by username: ' + error.message);
+    }
+  }
 }
 
 module.exports = new UserDao();

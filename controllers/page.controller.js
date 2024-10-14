@@ -53,15 +53,15 @@ class PageController {
       if (!community_id || !page_id) {
         return res.status(400).json({ message: 'Missing required parameters' });
       }
-  
+
       const updatedPage = await PageService.updatePage(page_id, pageData, userId);
-  
+
       if (!updatedPage) {
         return res.status(404).json({ message: 'Page not found or you are not authorized to update this page' });
       }
-  
+
       getIo().to(community_id).emit('newUpdatedPage', updatedPage);
-  
+
       return res.status(200).json({ message: 'Page updated successfully', updatedPage });
     } catch (error) {
       return res.status(500).json({ message: error.message });
@@ -121,7 +121,7 @@ class PageController {
       return res.status(500).json({ message: `Error getting page by ID: ${error.message}` });
     }
   }
-  
+
 
   /**
    * Retrieves all pending pages.
@@ -135,12 +135,12 @@ class PageController {
       const { community_id } = req.params;
       console.log(`Controller fetching pending pages for community: ${community_id}`);
       const pendingPages = await PageService.getPendingPages(community_id);
-  
+
       if (!pendingPages || pendingPages.length === 0) {
         console.log('No pending pages found');
         return res.status(404).json({ message: 'No pending pages found for this community' });
       }
-  
+
       console.log(`Returning ${pendingPages.length} pending pages`);
       return res.status(200).json({
         message: 'Pending pages fetched successfully',
@@ -175,7 +175,7 @@ class PageController {
       });
     }
   }
-  
+
 
   /**
    * Approves a page to be added to a community.
@@ -249,23 +249,25 @@ class PageController {
   }
 
   /**
-   * Controller for searching pages.
-   * @param {Request} req - Express request object containing query parameters.
-   * @param {Response} res - Express response object.
-   * @returns {Response} - JSON response with search results.
-   */
+  * Handles the request to search pages by tags, username, and title.
+  * @param {Object} req - The request object.
+  * @param {Object} res - The response object.
+  */
   async searchPages(req, res) {
     try {
-      const queryParams = req.query;
-      console.log(queryParams) 
+      const { tags, username, title } = req.query;
 
-      if (!queryParams) {
-        return res.status(400).json({ error: 'Missing query parameters' });
-      }
-      const pages = await PageService.searchPages(queryParams);
-      return res.status(200).json(pages);
+      const searchCriteria = {
+        tags: tags ? tags.split(',') : undefined,
+        username,
+        title,
+      };
+
+      const pages = await PageService.searchPages(searchCriteria);
+      res.status(200).json(pages);
     } catch (error) {
-      return res.status(500).json({ error: 'Error fetching pages: ' + error.message });
+      console.error(error);
+      res.status(500).json({ message: error.message });
     }
   }
 }

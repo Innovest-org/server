@@ -30,8 +30,8 @@ const AdminSchema = new Schema(
       enum: adminPermissionsEnum,
       default: ['CREATE_USER_OR_ADMIN'],
     },
-    approved_pages: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Page' }],
-    communities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Community' }],
+    approved_pages: [{ type: String, ref: 'Page' }],
+    communities: [{ type: String, ref: 'Community' }],
   },
   { timestamps: true },
 );

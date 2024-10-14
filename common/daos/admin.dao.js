@@ -27,23 +27,23 @@ class AdminDao {
    * @returns {Promise<Admin>} - The updated user.
    * @throws {Error} If the user couldn't be updated.
    */
-  async  updateAdmin(adminId, updateData) {
+  async updateAdmin(adminId, updateData) {
     try {
-        const updatedAdmin = await Admin.findOneAndUpdate(
-            { admin_id: adminId }, 
-            updateData,
-            { new: true, runValidators: true }
-        );
+      const updatedAdmin = await Admin.findOneAndUpdate(
+        { admin_id: adminId },
+        updateData,
+        { new: true, runValidators: true }
+      );
 
-        if (!updatedAdmin) {
-            throw new Error('Admin not found');
-        }
+      if (!updatedAdmin) {
+        throw new Error('Admin not found');
+      }
 
-        return updatedAdmin;
+      return updatedAdmin;
     } catch (error) {
-        throw new Error('Error updating admin: ' + error.message);
+      throw new Error('Error updating admin: ' + error.message);
     }
-}
+  }
 
 
   /**
@@ -71,7 +71,7 @@ class AdminDao {
    */
   async getAllAdmins() {
     try {
-      return await Admin.find({ role: 'ADMIN'});
+      return await Admin.find({ role: 'ADMIN' });
     } catch (error) {
       throw new Error('Error fetching users: ' + error.message);
     }
@@ -90,7 +90,7 @@ class AdminDao {
       throw new Error('Error fetching user: ' + error.message);
     }
   }
-  
+
   /**
    * Retrieves the user with the given email.
    * @param {string} email - The email of the user to be retrieved.
@@ -99,8 +99,8 @@ class AdminDao {
    */
   async getAdminByEmail(email) {
     try {
-      return await Admin.findOne({ email : email });
-    }catch (error) {
+      return await Admin.findOne({ email: email });
+    } catch (error) {
       throw new Error('Error fetching user: ' + error.message);
     }
   }
@@ -113,7 +113,7 @@ class AdminDao {
    */
   async getAdminByUsername(username) {
     try {
-      return await Admin.findOne({ username : username});
+      return await Admin.findOne({ username: username });
     } catch (error) {
       throw new Error('Error fetching user: ' + error.message);
     }
@@ -126,19 +126,41 @@ class AdminDao {
    */
   async isAdmin(adminId) {
     try {
-        const admin = await Admin.findOne({ admin_id: adminId });
-        if (!admin) {
-            console.log(`No admin found with id: ${adminId}`);
-            return false;
-        }
-        console.log(`Admin found: ${admin.role}`);
-        return admin.role === 'SUPER_ADMIN' || admin.role === 'ADMIN';
+      const admin = await Admin.findOne({ admin_id: adminId });
+      if (!admin) {
+        console.log(`No admin found with id: ${adminId}`);
+        return false;
+      }
+      console.log(`Admin found: ${admin.role}`);
+      return admin.role === 'SUPER_ADMIN' || admin.role === 'ADMIN';
     } catch (error) {
-        console.error('Error checking admin status:', error);
-        throw new Error('Unable to verify admin status');
+      console.error('Error checking admin status:', error);
+      throw new Error('Unable to verify admin status');
     }
-}
+  }
 
+  /**
+  * Searches for admins by username.
+  * @param {string} usernameQuery - The username to search for.
+  * @returns {Promise<Admin[]>} - A list of admins that match the search query.
+  * @throws {Error} If the admins couldn't be fetched.
+  */
+    async searchAdminsByUsername(usernameQuery) {
+      try {
+        const admins = await Admin.find({
+          username: { $regex: usernameQuery, $options: 'i' },
+        });
+  
+        if (admins.length === 0) {
+          return null; // No admins found
+        }
+  
+        return admins;
+      } catch (error) {
+        throw new Error('Error searching admins by username: ' + error.message);
+      }
+    }
+  
 }
 
 module.exports = new AdminDao();

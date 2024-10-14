@@ -206,6 +206,19 @@ class CommunityServices {
     }
   }
 
+  /**
+  * Searches for communities by their name.
+  * @param {string} communityName - The name of the community to search for.
+  * @returns {Promise<Community[]>} - A list of communities that match the search.
+  * @throws {Error} - If an error occurs during the search.
+  */
+  async searchCommunitiesByName(communityNameQuery) {
+    try {
+      return await CommunityDAO.searchCommunitiesByName(communityNameQuery);
+    } catch (error) {
+      throw new Error('Error in service layer while searching for communities: ' + error.message);
+    }
+  }
 }
 
 module.exports = new CommunityServices();

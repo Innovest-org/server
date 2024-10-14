@@ -56,6 +56,21 @@ class AdminServices {
   async deleteAdmin(id) {
     return await adminDao.deleteAdmin(id);
   }
+
+
+  /**
+     * Searches for admins by username.
+     * @param {string} usernameQuery - The username query to search for.
+     * @returns {Promise<Admin[]>} - List of admins matching the search query.
+     * @throws {Error} If the search couldn't be performed.
+     */
+  async searchAdminsByUsername(usernameQuery) {
+    try {
+      return await adminDao.searchAdminsByUsername(usernameQuery);
+    } catch (error) {
+      throw new Error('Error searching admins by username: ' + error.message);
+    }
+  }
 }
 
 module.exports = new AdminServices();

@@ -71,6 +71,20 @@ class UserServices {
       throw new Error('Error fetching user:' + error.message);
     }
   }
+
+  /**
+  * Searches for users by username.
+  * @param {string} usernameQuery - The username to search for.
+  * @returns {Promise<User[]>} - A list of users that match the search query.
+  * @throws {Error} If the users couldn't be fetched.
+  */
+  async searchUsersByUsername(usernameQuery) {
+    try {
+      return await userDao.searchUsersByUsername(usernameQuery);
+    } catch (error) {
+      throw new Error('Error searching users by username: ' + error.message);
+    }
+  }
 }
 
 module.exports = new UserServices();

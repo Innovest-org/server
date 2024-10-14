@@ -286,22 +286,44 @@ class CommunityDAO {
       const communityUser = await CommunityUsers.findOne({ user_id, community_id });
 
       if (!communityUser) {
-          console.log('No community user found for this user and community.');
-          throw new Error('User is not part of this community');
+        console.log('No community user found for this user and community.');
+        throw new Error('User is not part of this community');
       }
 
       if (communityUser.member_status !== 'APPROVED') {
-          console.log('User is not approved');
-          throw new Error('User is not approved to perform this action in the community');
+        console.log('User is not approved');
+        throw new Error('User is not approved to perform this action in the community');
       }
 
       return true;
-  } catch (error) {
+    } catch (error) {
       console.error('Error checking membership status:', error.message);
       throw new Error('Error checking membership status: ' + error.message);
+    }
   }
-}
 
+  /**
+   * Searches for communities by their name.
+   * @param {string} communityName - The community name to search for.
+   * @returns {Promise<Community[]>} - A list of communities that match the search.
+   * @throws {Error} - If an error occurs while searching for the community.
+   */
+  async searchCommunitiesByName(communityNameQuery) {
+    try {
+      const communities = await Community.find({
+        community_name: { $regex: communityNameQuery, $options: 'i' }
+      });
+
+      if (communities.length === 0) {
+        throw new Error('No communities found with the given name');
+      }
+
+      return communities;
+    } catch (error) {
+      throw new Error('Error searching for community: ' + error.message);
+    }
+
+  }
 }
 
 module.exports = new CommunityDAO();
