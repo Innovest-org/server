@@ -83,6 +83,7 @@ class LikeDAO {
       const likes = await Like.find({ page_id: pageId });
       const populatedLikes = await Promise.all(
         likes.map(async (like) => {
+          
           const user = await User.findOne({ id: like.user_id });
           return {
             ...like.toObject(),

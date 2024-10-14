@@ -1,7 +1,11 @@
-const mongoose = require('mongoose')
-const { v4: uuidv4 } = require('uuid');
+const mongoose = require('mongoose');
 
 const CommentSchema = new mongoose.Schema({
+    comment_id: {
+        type: String,
+        default: () => new mongoose.Types.ObjectId().toString(),
+        unique: true
+    },
     user_id: { type: String, ref: 'User', required: true },
     page_id: { type: String, ref: 'Page', required: true },
     content: { type: String, required: true, maxlength: 1000 },
