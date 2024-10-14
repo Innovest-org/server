@@ -57,10 +57,8 @@ const userSchema = new Schema(
     // Feedback relationships
     feedback_maker: [{ type: Schema.Types.ObjectId, ref: 'Feedback' }],
     feedback_getter: [{ type: Schema.Types.ObjectId, ref: 'Feedback' }],
-
-    // Relationships
-    user_languages: [{ type: Schema.Types.ObjectId, ref: 'UserLanguages' }],
-    user_interests: [{ type: Schema.Types.ObjectId, ref: 'UserInterests' }],
+    interests:[{type: String}],
+    languages:[{type: String}],
     last_login: { type: Date },
 
     // Communities
@@ -77,71 +75,12 @@ const userSchema = new Schema(
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
 
-const interestsSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      unique: true,
-      maxlength: 50,
-    },
-    admin_id: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    users: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'UserInterests',
-      },
-    ],
-  },
-  { timestamps: true },
-);
-
-const languagesSchema = new Schema(
-  {
-    name: {
-      type: String,
-      required: true,
-      unique: true,
-      maxlength: 50,
-    },
-    admin_id: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
-    users: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'UserLanguages',
-      },
-    ],
-  },
-  { timestamps: true },
-);
-
-// UserInterests Schema (for many-to-many relationship)
-const userInterestsSchema = new Schema(
-  {
-    user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    interest_id: {
-      type: Schema.Types.ObjectId,
-      ref: 'Interest',
-      required: true,
-    },
-  },
-  { timestamps: true },
-);
-
 // UserLanguages Schema (for many-to-many relationship)
 const userLanguagesSchema = new Schema(
   {
-    user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    user_id: { type: String, ref: 'User', required: true },
     language_id: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: 'Languages',
       required: true,
     },
