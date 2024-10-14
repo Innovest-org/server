@@ -7,9 +7,10 @@ const pageController = require('../controllers/page.controller');
 const router = express.Router();
 
 // Page Management Routes within Community
-router.get('/search-pages',
+router.get('/pages/search-pages',
   AuthMiddleware(),
-  pageController.searchPages
+  checkPermissions(['VIEW_PAGE', 'VIEW_COMMUNITY']),
+  PageController.searchPages
 );
 
 router.get('/:community_id/pages',
