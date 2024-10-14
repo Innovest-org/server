@@ -15,7 +15,7 @@ const pageSchema = new mongoose.Schema({
     enum: ['EVENT', 'ARTICLE', 'POST', 'PROJECT_INFO'],
   },
   likes: { type: Number, default: 0 },
-  views: { type: Number, default: 0 },
+  comments: { type: Number, default: 0 },
   tags: [{ type: String }],
   author: { type: String, ref: 'User'},
 }, {

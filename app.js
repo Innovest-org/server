@@ -9,6 +9,7 @@ const { dbConection } = require("./config/db");
 const bodyParser = require('body-parser');
 const http = require('http');
 const socketConfig = require('./config/socket');
+const commentModule = require("./modules/comment.module");
 
 
 dotenv.config();
@@ -41,7 +42,8 @@ app.use(require('cookie-parser')());
 app.use('/api', adminModule());
 app.use('/api', communityModule());
 app.use('/api', userModule());
-app.use('/api', likeModule())
+app.use('/api', likeModule());
+app.use('/api', commentModule());
 
 // Socket.IO setup
 io.on('connection', (socket) => {
