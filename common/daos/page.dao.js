@@ -2,6 +2,7 @@ const Page = require('../../db/models/pageModel');
 const CommunityPages = require('../../db/models/communityPagesModel');
 const Community = require('../../db/models/communityModel');
 const { validateCreatePage, validateUpdatePage } = require('../../db/validators/pageValidator');
+const { checkMembershipStatus } = require('./community.dao');
 
 class PageDAO {
   /**
@@ -10,8 +11,9 @@ class PageDAO {
    * @param {String} userId - ID of the user creating the page.
    * @returns {Promise<Page>} - The newly created page document.
    */
-  async createPage(pageData, userId) {
+  async createPage(pageData, userId, communityId) {
     try {
+      await checkMembershipStatus(userId, communityId);
       const page = new Page({
         ...pageData,
         author: userId,

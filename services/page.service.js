@@ -17,7 +17,7 @@ class PageService {
   async createPage(pageData, communityId, userId, adminId) {
     console.log(communityId)
     try {
-      const page = await PageDAO.createPage(pageData, userId);
+      const page = await PageDAO.createPage(pageData, userId, communityId);
       console.log(page)
       const communityPageEntry = new CommunityPages({
         community_id: communityId,
