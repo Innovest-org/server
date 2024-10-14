@@ -257,7 +257,6 @@ async getCommunityPages(communityId) {
  */
 async searchPages(searchCriteria) {
   const { tags, username, title } = searchCriteria;
-
   try {
     let query = {};
 
@@ -269,19 +268,15 @@ async searchPages(searchCriteria) {
       query.title = { $regex: title, $options: 'i' };
     }
 
-    let pages = [];
     if (username) {
-      const user = await User.findOne({ username: { $regex: username, $options: 'i' } });
-      if (user) {
-        pages = await Page.find({ author: user._id, ...query });
-      } else {
-        throw new Error('No user found with the provided username');
-      }
-    } else {
-      pages = await Page.find(query);
+      const users = await User.find({
+        username: { $regex: username, $options: 'i' },
+      });
+      const allPages = await Promise.all(users.map( async (user) => {
+        return await Page.find({ author: user.id, ...query });
+      }))
+      return allPages.flat();
     }
-
-    return pages;
 
   } catch (error) {
     throw new Error('Error searching for pages: ' + error.message);

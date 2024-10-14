@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const AuthMiddleware = () => {
     return (req, res, next) => {
         const token = req.cookies.token;
-        
 
         if (req.path === '/forgot-password') {
             return next();

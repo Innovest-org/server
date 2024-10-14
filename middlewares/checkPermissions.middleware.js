@@ -1,7 +1,6 @@
 const checkPermissions = (requiredPermissions) => {
   return (req, res, next) => {
     const userPermissions = req.user.permissions || [];
-    // console.log("req",req.user)
     
     // Allow all operations if the user is a Super Admin
     if (req.user.role === 'SUPER_ADMIN') {
