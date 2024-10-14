@@ -41,7 +41,7 @@ class UserServices {
         }
         // Save document paths to user
         user.id_documents = documents_directories;
-        user.is_verified = false;  // Set the user as not verified initially
+        user.is_verified = false;
         try {
             const savedUser = await userDao.createUser(user);
             const payload = {
@@ -54,6 +54,7 @@ class UserServices {
                     permissions: savedUser.permissions
                 }
             };
+            getIo().emit('new_user_registered', savedUser);
             const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
             return token;
         } catch (error) {
