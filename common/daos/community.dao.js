@@ -279,6 +279,29 @@ class CommunityDAO {
     }
   }
 
+  async checkMembershipStatus(user_id, community_id) {
+    try {
+      console.log(`Checking membership for user: ${user_id} in community: ${community_id}`);
+
+      const communityUser = await CommunityUsers.findOne({ user_id, community_id });
+
+      if (!communityUser) {
+          console.log('No community user found for this user and community.');
+          throw new Error('User is not part of this community');
+      }
+
+      if (communityUser.member_status !== 'APPROVED') {
+          console.log('User is not approved');
+          throw new Error('User is not approved to perform this action in the community');
+      }
+
+      return true;
+  } catch (error) {
+      console.error('Error checking membership status:', error.message);
+      throw new Error('Error checking membership status: ' + error.message);
+  }
+}
+
 }
 
 module.exports = new CommunityDAO();
