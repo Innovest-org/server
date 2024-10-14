@@ -50,4 +50,8 @@ router.get('/pages/pending/:community_id',
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   pageController.getPendingPages);
 
+router.get('/search',
+  AuthMiddleware(),
+  pageController.searchPages
+);
 module.exports = router;
