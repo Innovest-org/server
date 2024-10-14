@@ -153,6 +153,14 @@ class UserDao {
       throw new Error('Error searching users by username: ' + error.message);
     }
   }
+
+  async getUsersByVerifiedStatus(isVerified) {
+    try {
+        return await User.find({ is_verified: isVerified });
+    } catch (error) {
+        throw new Error('Error fetching users by verification status: ' + error.message);
+    }
+}
 }
 
 module.exports = new UserDao();
