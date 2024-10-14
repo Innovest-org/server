@@ -55,24 +55,24 @@ const userSchema = new Schema(
     is_active: { type: Boolean, default: false },
 
     // Feedback relationships
-    feedback_maker: [{ type: Schema.Types.ObjectId, ref: 'Feedback' }],
-    feedback_getter: [{ type: Schema.Types.ObjectId, ref: 'Feedback' }],
+    feedback_maker: [{ type: String, ref: 'Feedback' }],
+    feedback_getter: [{ type: String, ref: 'Feedback' }],
 
     // Relationships
-    user_languages: [{ type: Schema.Types.ObjectId, ref: 'UserLanguages' }],
-    user_interests: [{ type: Schema.Types.ObjectId, ref: 'UserInterests' }],
+    user_languages: [{ type: String, ref: 'UserLanguages' }],
+    user_interests: [{ type: String, ref: 'UserInterests' }],
     last_login: { type: Date },
 
     // Communities
     user_communities: [{ type: String, ref: 'CommunityUsers' }],
 
     // Projects and Investments
-    projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
-    investments: [{ type: Schema.Types.ObjectId, ref: 'Investment' }],
+    projects: [{ type: String, ref: 'Project' }],
+    investments: [{ type: String, ref: 'Investment' }],
 
     // Messages
-    messages_sent: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
-    messages_received: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
+    messages_sent: [{ type: String, ref: 'Message' }],
+    messages_received: [{ type: String, ref: 'Message' }],
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } },
 );
