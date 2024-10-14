@@ -64,6 +64,31 @@ class UserController {
       res.status(400).json({ message: error.message });
     }
   }
+
+  /**
+   * Handles the request to search users by username.
+   * @param {Object} req - The request object containing query params.
+   * @param {Object} res - The response object to send the results.
+   */
+  async searchUsers(req, res) {
+    const { usernameQuery } = req.query;
+
+    if (!usernameQuery) {
+      return res.status(400).json({ error: 'Username query is required' });
+    }
+
+    try {
+      const users = await UserService.searchUsersByUsername(usernameQuery);
+
+      if (!users || users.length === 0) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      return res.status(200).json(users);
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new UserController();

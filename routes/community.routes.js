@@ -6,6 +6,12 @@ const checkRole = require('../middlewares/role.middleware');
 const router = express.Router();
 
 // Community Management Routes
+router.get('/search',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  checkPermissions(['VIEW_COMMUNITY']),
+  CommunityController.searchCommunities
+);
 router.post('/',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),

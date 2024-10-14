@@ -14,7 +14,15 @@ router.post('/login', AdminAuthController.login);
 router.get('/logout', AdminAuthController.logout);
 
 // Admin Management Operations
-router.post('/', AuthMiddleware(), checkRole(['SUPER_ADMIN']),  AdminController.create);
+router.get('/search',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  AdminController.searchAdmins);
+
+router.post('/',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN']),
+  AdminController.create);
 router.put('/:id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
@@ -22,7 +30,7 @@ router.put('/:id',
   checkPermissions(['UPDATE_USER_OR_ADMIN']),
   AdminController.update);
 router.delete('/:id',
-  AuthMiddleware(), 
+  AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   checkOwnership(Admin, 'admin_id'),
   checkPermissions(['DELETE_USER_OR_ADMIN']),

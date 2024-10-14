@@ -250,37 +250,44 @@ async getCommunityPages(communityId) {
     }
   }
 
-  async searchPages(queryParams) {
-    const { tags, username, title, page_type, order } = queryParams;
-    let searchCriteria = {};
-  
-    if (tags) {
-      searchCriteria.tags = { $in: tags.split(',') };
+  /**
+ * Searches for pages by tags, username, and title.
+ * @param {Object} searchCriteria - Contains search parameters like tags, username, and title.
+ * @returns {Promise<Array>} - Array of pages that match the search criteria.
+ */
+async searchPages(searchCriteria) {
+  const { tags, username, title } = searchCriteria;
+
+  try {
+    let query = {};
+
+    if (tags && tags.length > 0) {
+      query.tags = { $in: tags };
     }
-  
-    if (username) {
-      const user = await User.findOne({ username });
-      if (user) {
-        searchCriteria.author = user.id;
-      }
-    }
-  
+
     if (title) {
-      searchCriteria.title = { $regex: title, $options: 'i' };
+      query.title = { $regex: title, $options: 'i' };
     }
-  
-    if (page_type) {
-      searchCriteria.page_type = page_type.toUpperCase();
+
+    let pages = [];
+    if (username) {
+      const user = await User.findOne({ username: { $regex: username, $options: 'i' } });
+      if (user) {
+        pages = await Page.find({ author: user._id, ...query });
+      } else {
+        throw new Error('No user found with the provided username');
+      }
+    } else {
+      pages = await Page.find(query);
     }
-  
-    let sortCriteria = { createdAt: -1 };
-  
-    if (order && (order === 'asc' || order === 'desc')) {
-      sortCriteria.createdAt = order === 'asc' ? 1 : -1;
-    }
-  
-    return await Page.find(searchCriteria).sort(sortCriteria);
+
+    return pages;
+
+  } catch (error) {
+    throw new Error('Error searching for pages: ' + error.message);
   }
+}
+
   
 }
 

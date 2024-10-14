@@ -73,6 +73,8 @@ class CommentService {
             throw new Error('Error updating comment: ' + error.message);
         }
     }
+
+    
 }
 
 module.exports = new CommentService();

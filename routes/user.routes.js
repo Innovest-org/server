@@ -14,6 +14,12 @@ router.post('/register' , multParse.any(),  UserAuthController.register);
 router.post('/login', UserAuthController.login);
 
 // User Management Operations
+router.get('/search',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN", 'ENTREPRENEUR', 'INVESTOR']),
+  checkPermissions(['VIEW_USER']),
+  UserController.searchUsers);
+
 router.get('/' ,
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN", 'ENTREPRENEUR', 'INVESTOR']),

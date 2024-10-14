@@ -199,17 +199,17 @@ class PageService {
   }
 
     /**
-   * Search pages based on tags, username, title, page_type, and order.
-   * @param {Object} queryParams - The search filters and order options.
-   * @returns {Promise<Page[]>} - The list of matched pages.
+   * Searches pages based on tags, username, and title.
+   * @param {Object} searchCriteria - The search criteria including tags, username, and title.
+   * @returns {Promise<Array>} - A list of pages matching the search criteria.
    */
-    async searchPages(queryParams) {
-      try {
-        return await PageDAO.searchPages(queryParams);
-      } catch (error) {
-        throw new Error('Error in PageService: ' + error.message);
-      }
+  async searchPages(searchCriteria) {
+    try {
+      return await PageDAO.searchPages(searchCriteria);
+    } catch (error) {
+      throw new Error('Error in service layer while searching pages: ' + error.message);
     }
+  }
 }
 
 module.exports = new PageService();
