@@ -33,7 +33,6 @@ class CommunityController {
       const { community_id } = req.params;
       const admin_id = req.user.id;
       const communityData = new UpdateCommunityDTO(req.body);
-      communityData.validate();
 
       const community = await CommunityServices.updateCommunity(community_id, admin_id, communityData);
       res.status(200).json({ message: 'Community updated', community });
