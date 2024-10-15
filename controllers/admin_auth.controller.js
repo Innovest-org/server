@@ -63,7 +63,9 @@ class AdminAuthController {
    */
   async logout(req, res) {
     try {
-      res.clearCookie('token').status(200).json({ message: 'Logout successful' });
+      res.status(200)
+      .cookie('token', '', { httpOnly: false, sameSite: 'none', secure: true, expires: new Date(0) })
+      .json({ message: 'Logout'});
     } catch (error) {
       res.status(400).json({ message: error.message });
     }

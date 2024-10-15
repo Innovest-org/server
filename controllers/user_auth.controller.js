@@ -3,7 +3,6 @@ const RegisterUserDTO = require('../common/dtos/auth/register_user.dto');
 const LoginDTO = require('../common/dtos/auth/login.dto');
 const { User } = require('../db/models/userModel');
 const Admin = require('../db/models/adminModel');
-const { getIo } = require('../config/socket');
 const notificationService = require('../services/notification.service');
 class UserController {
   /**
@@ -168,6 +167,13 @@ class UserController {
       res.status(400).json({ error: error.message });
     }
   };
+
+  async verify(req, res) {
+    const user = req.user;
+    if(user) {
+      res.status(200).json(user);
+    }
+  }
 }
 
 module.exports = new UserController();

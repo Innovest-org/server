@@ -5,7 +5,8 @@ const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const validator = require('validator');
-const crypto = require('crypto');
+const { getIo } = require('../config/socket');
+
 
 
 class UserServices {
