@@ -11,6 +11,9 @@ var multParse = multer()
 
 router.post('/register', multParse.any(), UserAuthController.register);
 router.post('/login', UserAuthController.login);
+router.get('/verify',
+  AuthMiddleware(),
+  UserAuthController.verify);
 router.get('/pending-users',
   AuthMiddleware(),
   UserAuthController.getPendingUsers);

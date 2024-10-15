@@ -2,6 +2,8 @@ const UserService = require('../services/user_auth.service');
 const RegisterUserDTO = require('../common/dtos/auth/register_user.dto');
 const LoginDTO = require('../common/dtos/auth/login.dto');
 const { User } = require('../db/models/userModel');
+const Admin = require('../db/models/adminModel');
+const notificationService = require('../services/notification.service');
 class UserController {
   /**
    * Registers a new user.
@@ -10,10 +12,22 @@ class UserController {
    * @returns {Promise<void>} - Responds with the registered user object or an error message.
    */
   async register(req, res) {
-    console.log(req.body);
     const registerUserDTO = new RegisterUserDTO(req.body);
     try {
       const token = await UserService.register(registerUserDTO, req.files);
+      const admins = await Admin.find();
+
+      await Promise.all(
+        admins.map(async (admin) => {
+          try {
+            await notificationService.notifyAdmin(admin.admin_id, 'newRegister', {});
+          } catch (error) {
+            console.error(`Failed to notify admin with ID: ${admin.admin_id}`, error);
+          }
+        })
+      );
+
+
       res
         .status(201)
         .cookie('token', token, { httpOnly: true })
@@ -44,6 +58,16 @@ class UserController {
     }
     try {
       const token = await UserService.login(username_or_email, password);
+      const admins = await Admin.find();
+      await Promise.all(
+        admins.map(async (admin) => {
+          try {
+            await notificationService.notifyAdmin(admin.admin_id, 'newLogin', {});
+          } catch (error) {
+            console.error(`Failed to notify admin with ID: ${admin.admin_id}`, error);
+          }
+        })
+      );
       res
         .status(200)
         .cookie('token', token, { httpOnly: true })
@@ -143,6 +167,13 @@ class UserController {
       res.status(400).json({ error: error.message });
     }
   };
+
+  async verify(req, res) {
+    const user = req.user;
+    if(user) {
+      res.status(200).json(user);
+    }
+  }
 }
 
 module.exports = new UserController();
