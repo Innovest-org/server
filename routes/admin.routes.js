@@ -23,22 +23,26 @@ router.post('/',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN']),
   AdminController.create);
+
 router.put('/:id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   checkOwnership(Admin, 'admin_id'),
   checkPermissions(['UPDATE_USER_OR_ADMIN']),
   AdminController.update);
+
 router.delete('/:id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   checkOwnership(Admin, 'admin_id'),
   checkPermissions(['DELETE_USER_OR_ADMIN']),
   AdminController.delete);
+
 router.get('/',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   AdminController.list);
+
 router.get('/:id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', 'ADMIN']),
