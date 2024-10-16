@@ -20,7 +20,8 @@ const io = socketConfig.init(server);
 dbConection();
 
 // Middleware
-const allowedOrigins = ['https://client-ouvmumces-marwaashraf1812s-projects.vercel.app'];
+// Middleware
+const allowedOrigins = ['https://client-ouvmumces-marwaashraf1812s-projects.vercel.app', '*'];
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -29,8 +30,10 @@ app.use(cors({
     } else {
       callback(new Error('Not allowed by CORS'));
     }
-  }
+  },
+  credentials: true
 }));
+
 
 app.use(express.json());
 app.use(bodyParser.json());
