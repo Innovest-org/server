@@ -20,17 +20,16 @@ const io = socketConfig.init(server);
 dbConection();
 
 // Middleware
-const allowedOrigins = ['https://client-dd70tqpx9-marwaashraf1812s-projects.vercel.app/', '*'];
+const allowedOrigins = ['https://client-ouvmumces-marwaashraf1812s-projects.vercel.app'];
 
 app.use(cors({
-    origin: function (origin, callback) {
-        if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true, 
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
 }));
 
 app.use(express.json());
