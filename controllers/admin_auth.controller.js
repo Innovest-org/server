@@ -36,7 +36,7 @@ class AdminAuthController {
 
     const user = await Admin.findOne({ email : username_or_email })
     if (!user) {
-        throw new Error('User not found');
+      return res.status(404).json({ message: 'User not Found' });
     }
 
     const validationError = loginDTO.isValid();  // to capture validation error
