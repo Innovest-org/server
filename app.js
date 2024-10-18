@@ -20,7 +20,7 @@ const io = socketConfig.init(server);
 dbConection();
 
 // Cors
-const allowedOrigins = ['https://client-ouvmumces-marwaashraf1812s-projects.vercel.app', 'https://client-ruddy-iota-11.vercel.app'];
+const allowedOrigins = ['*','http://localhost:3000',"https://client-ruddy-iota-11.vercel.app"];
 
 app.use(cors({
   origin: function (origin, callback) {

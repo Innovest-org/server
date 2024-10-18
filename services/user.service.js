@@ -13,7 +13,7 @@ class UserServices {
     try {
       return await userDao.updateUser(userId, userData)
     } catch (error) {
-      throw new Error('Error updating user: ' + error.message);
+      throw new Error('Error updating user in service: ' + error.message);
     }
   }
 

@@ -41,7 +41,7 @@ class UserDao {
       }
       return updatedUser;
     } catch (error) {
-      throw new Error('Error updating user: ' + error.message);
+      throw new Error('Error updating user in dao: ' + error.message);
     }
   }
 
