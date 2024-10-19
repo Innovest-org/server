@@ -49,7 +49,7 @@ class UserController {
     const loginDTO = new LoginDTO(username_or_email, password);
     const user = await User.findOne({ email: username_or_email })
     if (!user) {
-      throw new Error('User not found');
+      return res.status(404).json({ message: 'User not Found' });
     }
     console.log(user);
     const validationError = loginDTO.isValid();
