@@ -95,9 +95,9 @@ class PageService {
    * @returns {Promise<Page[]>} - An array of all pending page documents.
    * @throws {Error} - If an error occurs while retrieving the pending pages.
    */
-  async getPendingPages(community_id) {
+  async getPendingPages() {
     try {
-      const pages = await PageDAO.getPendingPages(community_id);
+      const pages = await PageDAO.getPendingPages();
       console.log(`Service received ${pages.length} pending pages`);
       return pages;
     } catch (error) {

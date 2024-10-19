@@ -131,12 +131,11 @@ async getCommunityPages(communityId) {
    * @returns {Promise<CommunityPages[]>} - Array of pending community pages.
    * @throws {Error} If an error occurs while fetching the pending pages.
    */
-  async getPendingPages(community_id) {
+  async getPendingPages() {
     try {
-      console.log(`Fetching pending pages for community: ${community_id}`);
+      console.log('Fetching pending pages from all communities');
       const pendingPages = await CommunityPages.find({
         page_status: 'PENDING',
-        community_id: community_id,
       });
       console.log(`Found ${pendingPages.length} pending pages`);
       return pendingPages;

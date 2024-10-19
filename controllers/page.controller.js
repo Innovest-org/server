@@ -132,15 +132,13 @@ class PageController {
   // PageController.js
   async getPendingPages(req, res) {
     try {
-      const { community_id } = req.params;
-      console.log(`Controller fetching pending pages for community: ${community_id}`);
-      const pendingPages = await PageService.getPendingPages(community_id);
-
+      const pendingPages = await PageService.getPendingPages();
+  
       if (!pendingPages || pendingPages.length === 0) {
         console.log('No pending pages found');
-        return res.status(404).json({ message: 'No pending pages found for this community' });
+        return res.status(404).json({ message: 'No pending pages found' });
       }
-
+  
       console.log(`Returning ${pendingPages.length} pending pages`);
       return res.status(200).json({
         message: 'Pending pages fetched successfully',

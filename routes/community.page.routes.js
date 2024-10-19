@@ -7,6 +7,11 @@ const pageController = require('../controllers/page.controller');
 const router = express.Router();
 
 // Page Management Routes within Community
+router.get('/community-pages/pending-pages',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  pageController.getPendingPages);
+
 router.get('/pages/search-pages',
   AuthMiddleware(),
   checkPermissions(['VIEW_PAGE', 'VIEW_COMMUNITY']),
@@ -51,10 +56,7 @@ router.post('/:community_id/reject/:page_id',
   PageController.rejectPage);
 
 
-router.get('/pages/pending/:community_id',
-  AuthMiddleware(),
-  checkRole(['SUPER_ADMIN', "ADMIN"]),
-  pageController.getPendingPages);
+
 
 
 module.exports = router;
