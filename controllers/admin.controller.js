@@ -57,7 +57,7 @@ class AdminController {
     try {
       const deletedAdmin = await AdminService.deleteAdmin(req.params.id);
       if (!deletedAdmin) return res.status(404).json({ message: 'Admin not found' });
-      res.status(204).send();
+      res.status(200).json({ message: 'Admin Deleted', deletedAdmin });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
