@@ -9,7 +9,10 @@ const AdminSchema = new Schema(
     first_name: { type: String },
     last_name: { type: String },
     username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true,  validate: {
+      validator: (value) => validator.isEmail(value),
+      message: 'Please provide a valid email address',
+    } },
     password: { type: String, required: true },
     profile_image: {
       type: String,

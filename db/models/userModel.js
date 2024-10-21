@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4} = require('uuid');
 const uniqueValidator = require('mongoose-unique-validator');
+const validator = require('validator');
 const { userPermissionsEnum } = require('./permissionsEnum');
 
 const userSchema = new Schema(
@@ -11,7 +12,10 @@ const userSchema = new Schema(
     first_name: { type: String, required: true },
     last_name: { type: String, required: true },
     username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true,  validate: {
+      validator: (value) => validator.isEmail(value),
+      message: 'Please provide a valid email address',
+    } },
     password: { type: String, required: true },
     phone: {
       type: String,
