@@ -129,7 +129,7 @@ class UserServices {
             });
 
             // Send password reset email
-            const resetLink = `http://127.0.0.1:5000/api/user/reset-password?token=${resetToken}`;
+            const resetLink = `https://client-ruddy-iota-11.vercel.app/reset-password?token=${resetToken}`;
             await this.sendPasswordResetEmail(user.email, resetLink);
 
             return { message: 'Password reset link sent to your email.' };

@@ -102,8 +102,7 @@ class UserController {
      * @param {Object} res - The response object.
      */
   async resetPassword(req, res) {
-    const { token } = req.query;
-    const { newPassword } = req.body;
+    const { token, newPassword } = req.body;
 
     try {
       const response = await UserService.resetPassword(token, newPassword);
