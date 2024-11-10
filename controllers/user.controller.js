@@ -1,6 +1,5 @@
 const UserService = require('../services/user.service');
 
-
 class UserController {
   /**
    * Updates an existing user identified by the given ID.
@@ -11,10 +10,11 @@ class UserController {
   async updateUser(req, res) {
     try {
       const updatedUser = await UserService.updateUser(req.params.id, req.body);
-      if (!updatedUser) return res.status(404).json({ message: 'User not found' });
-      res.status(200).json({ message: 'User updated', updatedUser });
+      if (!updatedUser)
+        return res.status(404).json({ message: 'User not found' });
+      res.status(200).json({ message: 'User updated', user:updatedUser });
     } catch (error) {
-      res.status(400).json({ message: error.message});
+      res.status(400).json({ message: error.message });
     }
   }
 
@@ -27,7 +27,8 @@ class UserController {
   async deleteUser(req, res) {
     try {
       const deletedUser = await UserService.deleteUser(req.params.id);
-      if (!deletedUser) return res.status(404).json({ message: 'User not found' });
+      if (!deletedUser)
+        return res.status(404).json({ message: 'User not found' });
       res.status(200).json({ message: 'User deleted', deletedUser });
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -40,11 +41,11 @@ class UserController {
    * @param {Object} res - The HTTP response object.
    * @returns {Promise<void>} - Responds with the user or an error message.
    */
-  async getUserById(req, res){
+  async getUserById(req, res) {
     try {
       const user = await UserService.getUserById(req.params.id);
-      if (!user) return res.status(404).json({ message: 'User not found'});
-      res.status(200).json({ user });
+      if (!user) return res.status(404).json({ message: 'User not found' });
+      res.status(200).json(user);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -58,8 +59,8 @@ class UserController {
    */
   async getUsers(req, res) {
     try {
-      const users = await UserService.getAllUsers()
-      res.status(200).json({ users });
+      const users = await UserService.getAllUsers();
+      res.status(200).json(users);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
