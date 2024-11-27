@@ -6,17 +6,22 @@ const checkRole = require('../middlewares/role.middleware');
 const router = express.Router();
 
 // User Management in Community Routes
+router.get('/users/pending-users',
+  AuthMiddleware(),
+  checkRole(['SUPER_ADMIN', "ADMIN"]),
+  checkPermissions(['APPROVE_USER']),
+  CommunityController.getPendingUsers);
+
 router.post('/:community_id/join',
   AuthMiddleware(),
   checkPermissions(['JOIN_COMMUNITY']),
   CommunityController.addUserToPendingUsers);
 
-router.post('/:community_id/approve-user/:user_id',
+router.get('/:community_id/approve-user/:user_id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),
   checkPermissions(['APPROVE_USER']),
   CommunityController.approveUserToJoinCommunity);
-
 router.delete('/:community_id/reject-user/:user_id',
   AuthMiddleware(),
   checkRole(['SUPER_ADMIN', "ADMIN"]),

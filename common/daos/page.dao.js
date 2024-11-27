@@ -133,7 +133,6 @@ async getCommunityPages(communityId) {
    */
   async getPendingPages() {
     try {
-      console.log('Fetching pending pages from all communities');
       const pendingPages = await CommunityPages.find({
         page_status: 'PENDING',
       });

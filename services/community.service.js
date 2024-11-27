@@ -17,7 +17,7 @@ class CommunityServices {
       console.log(`isAdmin result: ${isAdminResult}`);
 
       if (!isAdminResult) {
-        const error = new Error("Only admins can create a community");
+        const error = new Error('Only admins can create a community');
         error.statusCode = 403;
         throw error;
       }
@@ -27,10 +27,10 @@ class CommunityServices {
       console.log(`Community created: ${newCommunity._id}`);
       return newCommunity;
     } catch (error) {
+      console.log(error);
       throw new Error('Error creating community:', error.message);
     }
   }
-
 
   /**
    * Updates an existing community using the provided data
@@ -44,7 +44,7 @@ class CommunityServices {
   async updateCommunity(community_id, admin_id, communityData) {
     const isAdmin = await adminDao.isAdmin(admin_id);
     if (!isAdmin) {
-      throw new Error("Only admins can update a community");
+      throw new Error('Only admins can update a community');
     }
 
     // Ensure the community exists before updating
@@ -55,7 +55,6 @@ class CommunityServices {
 
     return await CommunityDAO.updateCommunity(community_id, communityData);
   }
-
 
   /**
    * Deletes a community by its id
@@ -69,7 +68,7 @@ class CommunityServices {
     try {
       const isAdmin = await adminDao.isAdmin(admin_id);
       if (!isAdmin) {
-        throw new Error("Only admins can delete a community");
+        throw new Error('Only admins can delete a community');
       }
 
       const community = await CommunityDAO.getCommunity(community_id);
@@ -139,7 +138,15 @@ class CommunityServices {
     } catch (error) {
       console.error('Error adding user to pending users:', error);
       throw new Error('Unable to add user to pending users at the moment');
+    }
+  }
 
+  async getPendingUsers() {
+    try {
+      return await CommunityDAO.getPendingUsers();
+    } catch (error) {
+      console.error('Error fetching pending users:', error);
+      throw new Error('Unable to fetch pending users at the moment');
     }
   }
 
@@ -154,8 +161,7 @@ class CommunityServices {
     try {
       return await CommunityDAO.approveUserToJoinCommunity(communityId, userId);
     } catch (error) {
-      console.error('Error approving user:', error);
-      throw new Error('Unable to approve user at the moment');
+      console.error('Error in service when approving user:', error);
     }
   }
 
@@ -184,7 +190,7 @@ class CommunityServices {
    */
   async removeUserFromCommunity(communityId, userId) {
     try {
-      return await CommunityDAO.removeUserFromCommunity(communityId, userId)
+      return await CommunityDAO.removeUserFromCommunity(communityId, userId);
     } catch (error) {
       console.error('Error removing user from community:', error);
       throw new Error('Error removing user from community: ' + error.message);
@@ -207,16 +213,19 @@ class CommunityServices {
   }
 
   /**
-  * Searches for communities by their name.
-  * @param {string} communityName - The name of the community to search for.
-  * @returns {Promise<Community[]>} - A list of communities that match the search.
-  * @throws {Error} - If an error occurs during the search.
-  */
+   * Searches for communities by their name.
+   * @param {string} communityName - The name of the community to search for.
+   * @returns {Promise<Community[]>} - A list of communities that match the search.
+   * @throws {Error} - If an error occurs during the search.
+   */
   async searchCommunitiesByName(communityNameQuery) {
     try {
       return await CommunityDAO.searchCommunitiesByName(communityNameQuery);
     } catch (error) {
-      throw new Error('Error in service layer while searching for communities: ' + error.message);
+      throw new Error(
+        'Error in service layer while searching for communities: ' +
+          error.message,
+      );
     }
   }
 }
