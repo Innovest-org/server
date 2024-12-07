@@ -6,24 +6,25 @@ const projectSchema = new mongoose.Schema({
   project_id:{ type: String, default: uuidv4, unique: true },	 
   project_name: { type: String, required: true, trim: true },
   description: { type: String, required: true, trim: true },
-  entrepreneur_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Refers to the entrepreneur user who submitted the project
+  entrepreneur_id: { type: String, ref: 'User', required: true },
   status: { 
     type: String, 
     enum: ['under review', 'funded', 'funding'], 
     default: 'under review', 
     required: true 
     },
-  visibility: { type: Boolean, default: true },
+  approved: { type: Boolean, default: false },
+  visibility: { type: Boolean, default: false },
   field: { type: String, required: true },
   budget: { type: Number, required: true },
   offer: { type: Number },
   target: { type: Number },
   deadline: { type: String, required: true },
-  documents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Document' }], // Refers to the related documents for this project
+  documents: [{ type: String, ref: 'Document' }],
 
 }, { timestamps: true });
 
- projectSchema.index({ entrepreneur_id: 1 });
+projectSchema.index({ entrepreneur_id: 1 });
 
 
 const Project = mongoose.model('Project', projectSchema)
