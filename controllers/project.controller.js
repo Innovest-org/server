@@ -148,7 +148,6 @@ const ProjectController = {
       if (!projects) {
         return res.status(404).json({ message: 'No projects found' });
       }
-
       if (!projects || projects.length === 0) {
         return res.status(404).json({ message: 'No projects found for this user' });
       }

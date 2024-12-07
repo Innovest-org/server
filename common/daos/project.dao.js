@@ -11,7 +11,6 @@ const ProjectDAO = {
   async createProject(projectData) {
     try {
       const newProject = new Project({ ...projectData });
-
       const savedProject = await newProject.save();
 
       await User.findOneAndUpdate(
@@ -124,15 +123,19 @@ const ProjectDAO = {
  * @returns {Promise<Project[]>} - A list of projects associated with the entrepreneur.
  * @throws {Error} If an error occurs while fetching the projects.
  */
-  async getUserProjects(entrepreneurId) {
-    try {
-      const projects = await Project.find({ entrepreneur_id: entrepreneurId }).populate('entrepreneur_id', 'username')
-      .exec();
-      return projects;
-    } catch (error) {
-      throw new Error('Error getting projects by entrepreneur in dao: ' + error.message);
-    }
-  },
+
+async getUserProjects(entrepreneurId) {
+  try {
+
+    const projects = await Project.find({ entrepreneur_id: entrepreneurId })
+
+    return projects;
+  } catch (error) {
+    console.error('Full error:', error);
+    throw new Error('Error getting projects by entrepreneur in dao: ' + error.message);
+  }
+}
+
 };
 
 module.exports = ProjectDAO;
