@@ -1,5 +1,8 @@
 const CommunityServices = require('../services/community.service');
-const { CreateCommunityDTO, UpdateCommunityDTO } = require('../common/dtos/communityDTO/community.dto');
+const {
+  CreateCommunityDTO,
+  UpdateCommunityDTO,
+} = require('../common/dtos/communityDTO/community.dto');
 
 class CommunityController {
   /**
@@ -13,13 +16,15 @@ class CommunityController {
       // check on it again
       const admin_id = req.user.id;
       const communityData = new CreateCommunityDTO(req.body);
-      const community = await CommunityServices.createCommunity(admin_id, communityData);
+      const community = await CommunityServices.createCommunity(
+        admin_id,
+        communityData,
+      );
       res.status(201).json({ message: 'Community created', community });
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
   }
-
 
   /**
    * Updates an existing community using the provided data
@@ -34,15 +39,17 @@ class CommunityController {
       const admin_id = req.user.id;
       const communityData = new UpdateCommunityDTO(req.body);
 
-      const community = await CommunityServices.updateCommunity(community_id, admin_id, communityData);
+      const community = await CommunityServices.updateCommunity(
+        community_id,
+        admin_id,
+        communityData,
+      );
       res.status(200).json({ message: 'Community updated', community });
-
     } catch (error) {
       console.error('Error in updateCommunity:', error);
       res.status(400).json({ message: error.message });
     }
   }
-
 
   /**
    * Deletes a community by its name
@@ -55,7 +62,10 @@ class CommunityController {
       const { community_id } = req.params;
       const admin_id = req.user.id;
 
-      const community = await CommunityServices.deleteCommunity(community_id, admin_id);
+      const community = await CommunityServices.deleteCommunity(
+        community_id,
+        admin_id,
+      );
       res.status(200).json({ message: 'Community deleted', community });
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -72,7 +82,7 @@ class CommunityController {
     try {
       const { community_id } = req.params;
       const community = await CommunityServices.getCommunityById(community_id);
-      res.status(200).json({ community });
+      res.status(200).json(community);
     } catch (error) {
       console.error('Error in getCommunityById:', error);
       res.status(400).json({ message: error.message, stack: error.stack });
@@ -103,7 +113,8 @@ class CommunityController {
   async getCommunityByName(req, res) {
     try {
       const { community_name } = req.params;
-      const community = await CommunityServices.getCommunityByName(community_name);
+      const community =
+        await CommunityServices.getCommunityByName(community_name);
       res.status(200).json({ community });
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -117,14 +128,43 @@ class CommunityController {
    * @param {Object} res - The HTTP response object
    * @returns {Promise<void>} - Responds with the updated community or an error message
    */
-  async addUserToPendingUsers(req, res) {
+  async addUserToPendingUsers(communityId, userId, socket) {
     try {
-      const { community_id } = req.params;
-      const { id } = req.user;
-      const community = await CommunityServices.addUserToPendingUsers(community_id, id);
-      res.status(200).json({ community });
+      // const { community_id } = req.body;
+      // const { id } = req.user;
+      if (!communityId || !userId) {
+        throw new Error("Invalid communityId or userId");
+      }
+      const community = await CommunityServices.addUserToPendingUsers(
+        communityId,
+        userId,
+      );
+      socket.emit("joinRequestPending", { message: "Your request is pending approval.", community });
+      return community;
     } catch (error) {
-      res.status(400).json({ message: error.message });
+      console.error('Error in addUserToPendingUsers:', error);
+      throw error;
+    }
+  }
+
+  async getPendingUsers(req, res) {
+    try {
+      const pendingUsers = await CommunityServices.getPendingUsers();
+  
+      if (!pendingUsers || pendingUsers.length === 0) {
+        console.log('No pending users found');
+        return res.status(404).json({ message: 'No pending users found' });
+      }
+  
+      console.log(`Returning ${pendingUsers.length} pending users`);
+      return res.status(200).json(
+        pendingUsers,
+      );
+    } catch (error) {
+      console.error('Error in Controller getPendingUsers:', error);
+      return res.status(500).json({
+        message: 'Error fetching pending users: ' + error.message,
+      });
     }
   }
 
@@ -138,12 +178,19 @@ class CommunityController {
   async approveUserToJoinCommunity(req, res) {
     try {
       const { community_id, user_id } = req.params;
-      console.log(user_id);
+      console.log('Approving user to join community', community_id, user_id);
 
-      const community = await CommunityServices.approveUserToJoinCommunity(community_id, user_id);
-      const hasJoined = Array.isArray(community.users) && community.users.includes(user_id);
+      const community = await CommunityServices.approveUserToJoinCommunity(
+        community_id,
+        user_id,
+      );
+      const hasJoined =
+        Array.isArray(community.users) && community.users.includes(user_id);
 
-      console.log(user_id, hasJoined ? 'successfully joined' : 'failed to join');
+      console.log(
+        user_id,
+        hasJoined ? 'successfully joined' : 'failed to join',
+      );
 
       if (hasJoined) {
         community.member_count = community.users.length;
@@ -173,10 +220,12 @@ class CommunityController {
   async rejectUserToJoinCommunity(req, res) {
     try {
       const { community_id, user_id } = req.params;
-      const community = await CommunityServices.rejectUserToJoinCommunity(community_id, user_id);
+      const community = await CommunityServices.rejectUserToJoinCommunity(
+        community_id,
+        user_id,
+      );
       res.status(200).json({
-        message:
-          'User has been rejected from joining the community.',
+        message: 'User has been rejected from joining the community.',
       });
     } catch (error) {
       res.status(400).json({ message: error.message });
@@ -184,11 +233,11 @@ class CommunityController {
   }
 
   /**
-  * Removes a user from a community
-  * @param {Object} req - The request object
-  * @param {Object} res - The response object
-  * @returns {Promise<void>}
-  */
+   * Removes a user from a community
+   * @param {Object} req - The request object
+   * @param {Object} res - The response object
+   * @returns {Promise<void>}
+   */
   async removeUserFromCommunity(req, res) {
     const { community_id, user_id } = req.params;
     const authenticatedUserId = req.user.id;
@@ -197,12 +246,21 @@ class CommunityController {
     const isAdmin = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN';
 
     if (!isAdmin && authenticatedUserId !== user_id) {
-      return res.status(403).json({ message: 'Forbidden: You can only remove yourself from the community' });
+      return res
+        .status(403)
+        .json({
+          message: 'Forbidden: You can only remove yourself from the community',
+        });
     }
 
     try {
-      const updatedCommunity = await CommunityServices.removeUserFromCommunity(community_id, user_id);
-      res.status(200).json({ message: 'User removed successfully', updatedCommunity });
+      const updatedCommunity = await CommunityServices.removeUserFromCommunity(
+        community_id,
+        user_id,
+      );
+      res
+        .status(200)
+        .json({ message: 'User removed from community'});
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
@@ -226,10 +284,10 @@ class CommunityController {
   }
 
   /**
-  * Handles the request to search for communities by their name.
-  * @param {Object} req - The request object.
-  * @param {Object} res - The response object.
-  */
+   * Handles the request to search for communities by their name.
+   * @param {Object} req - The request object.
+   * @param {Object} res - The response object.
+   */
   async searchCommunities(req, res) {
     try {
       const { communityNameQuery } = req.query;
@@ -237,7 +295,8 @@ class CommunityController {
         return res.status(400).json({ message: 'Community name is required' });
       }
 
-      const communities = await CommunityServices.searchCommunitiesByName(communityNameQuery);
+      const communities =
+        await CommunityServices.searchCommunitiesByName(communityNameQuery);
       res.status(200).json(communities);
     } catch (error) {
       console.error(error);

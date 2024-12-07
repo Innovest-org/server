@@ -147,7 +147,7 @@ class CommunityDAO {
         console.log(`User with ID: ${userId} is already in community with ID: ${communityId}`);
         return {
           message: `User is already a member of the community.`,
-          communityUser: existingUser, // Optionally return the existing user data
+          communityUser: existingUser,
         };
       }
       const communityUserEntry = new CommunityUsers({
@@ -163,6 +163,18 @@ class CommunityDAO {
     }
   }
 
+  async getPendingUsers(communityId) {
+    try {
+      const pendingUsers = await CommunityUsers.find({
+        member_status: 'PENDING',
+      });
+      return pendingUsers;
+      } catch (error) {
+        console.error('Error fetching pending users:', error);
+        throw new Error('Error fetching pending users: ' + error.message);
+  }
+  }
+
   /**
    * Adds a user to a community's user list
    * @param {string} communityId - The unique id of the community to add the user to
@@ -175,13 +187,13 @@ class CommunityDAO {
       console.log('Approving user:', userId);
       console.log('In community:', communityId);
       const communityUser = await CommunityUsers.findOneAndUpdate(
-        { community_id: communityId, user_id: { $in: userId }, member_status: 'PENDING' },
+        { community_id: communityId, user_id: userId, member_status: 'PENDING' },
         { member_status: 'APPROVED' },
         { new: true }
       );
-
+  
       if (!communityUser) {
-        throw new Error(`There is no pending user with this id ${userId} in this community ${communityId} `);
+        throw new Error(`There is no pending user with ID ${userId} in community ${communityId}`);
       }
 
       const community = await Community.findOneAndUpdate(
@@ -194,22 +206,22 @@ class CommunityDAO {
         { id: userId },
         { $addToSet: { user_communities: communityId } },
         { new: true }
-      )
+      );
       if (!community) {
         throw new Error(`Community not found with ID: ${communityId}`);
       }
       if (!updateUserCommunities) {
         throw new Error(`User not found with ID: ${userId}`);
       }
-
+  
       console.log('Successfully approved user:', { communityId, userId });
       return community;
     } catch (error) {
-      console.error(error);
-      throw new Error('Error approving user to join community:', error);
+      console.error('Error in approveUserToJoinCommunity:', error);
+      throw error;
     }
   }
-
+  
   async rejectUserToJoinCommunity(communityId, userId) {
     try {
       return await CommunityUsers.findOneAndDelete(

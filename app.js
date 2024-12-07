@@ -10,6 +10,9 @@ const bodyParser = require('body-parser');
 const http = require('http');
 const socketConfig = require('./config/socket');
 const commentModule = require("./modules/comment.module");
+const { addUserToPendingUsers, approveUserToJoinCommunity } = require('./controllers/community.controller');
+const ProjectModule = require('./modules/project.module');
+
 
 
 dotenv.config();
@@ -45,20 +48,42 @@ app.use('/api', communityModule());
 app.use('/api', userModule());
 app.use('/api', likeModule());
 app.use('/api', commentModule());
+app.use('/api', ProjectModule());
 
 // Socket.IO setup
 io.on('connection', (socket) => {
-  console.log('New client connected');
+  console.log('A user connected');
 
-  socket.on('joinCommunity', (communityId) => {
-    console.log(`Client joined community: ${communityId}`);
-    socket.join(communityId);
+  socket.on("joinCommunity", async (communityId, userId) => {
+    try {
+      console.log("Received communityId:", communityId);
+      console.log("Received userId:", userId);
+
+      await addUserToPendingUsers(communityId, userId, socket);
+
+      io.emit("newJoinRequest", { communityId, userId });
+      socket.emit("joinRequestPending", "Your request is pending approval.");
+    } catch (error) {
+      console.error('Error handling join community request:', error);
+      socket.emit('error', 'Something went wrong.');
+    }
   });
+
+  // socket.on("approveJoinRequest", async (communityId, userId) => {
+  //   try {
+  //     await approveUserToJoinCommunity(communityId, userId, socket);
+  //     io.emit("joinRequestApproved", { communityId, userId });
+  //   } catch (error) {
+  //     console.error('Error handling approve join request:', error);
+  //     socket.emit('error', 'Something went wrong.');
+  //   }
+  // });
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
+    console.log('A user disconnected');
   });
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 8000;

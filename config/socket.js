@@ -12,7 +12,7 @@ module.exports = {
   init: (server) => {
     io = socketIO(server, {
       cors: {
-        origin: ["*",'http://localhost:3000',"https://client-ruddy-iota-11.vercel.app"],
+        origin: ["*",'http://localhost:5173','http://localhost:3000',"https://client-ruddy-iota-11.vercel.app"],
         methods: ["GET", "POST"]
       }
     });
