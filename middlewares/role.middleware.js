@@ -9,7 +9,7 @@ const checkRole = (roles) => {
             }
 
             const userId = req.user.id;
-            console.log('User ID:', userId,)
+            // console.log('User ID:', userId,)
             let user;
             if (req.user.role === 'ADMIN' || req.user.role === 'SUPER_ADMIN') {
                 user = await Admin.findOne({ admin_id: userId });

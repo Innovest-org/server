@@ -148,7 +148,6 @@ const ProjectController = {
       if (!projects) {
         return res.status(404).json({ message: 'No projects found' });
       }
-
       if (!projects || projects.length === 0) {
         return res.status(404).json({ message: 'No projects found for this user' });
       }
@@ -159,6 +158,93 @@ const ProjectController = {
       return res.status(500).json({ message: 'Internal server error' });
     }
   },
+
+  /**
+   * Retrieves all projects that contain a specific field.
+   * @param {Object} req - The HTTP request object containing the field in the query.
+   * @param {Object} res - The HTTP response object.
+   * @returns {Promise<void>} - Responds with a list of projects containing the given field or an error message.
+   * @throws {Error} If there is an issue retrieving the projects.
+   */
+  async getProjectsByField(req, res) {
+    try {
+      const { field } = req.query;
+      if (!field) {
+        return res.status(400).json({ message: 'Field parameter is required' });
+      }
+  
+      const projects = await ProjectService.getProjectsByField(field);
+      if (!projects || projects.length === 0) {
+        return res.status(404).json({ message: 'No projects found' });
+      }
+  
+      // Assuming ProjectDTO.toResponse formats the project data correctly
+      return res.status(200).json(projects.map(ProjectDTO.toResponse));
+    } catch (error) {
+      console.error('Error in getProjectsByField:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  },
+
+  /**
+   * Retrieves all projects that are under review.
+   * @param {Object} req - The HTTP request object.
+   * @param {Object} res - The HTTP response object.
+   * @returns {Promise<void>} - Responds with a list of projects that are under review or an error message.
+   * @throws {Error} If there is an issue retrieving the projects.
+   */
+  async getUnderReviewProjects(req, res) {
+    try {
+      const underReviewProjects = await ProjectService.getUnderReviewProjects();
+      if (!underReviewProjects) {
+        return res.status(404).json({ message: 'No projects found' });
+      }
+
+      return res.status(200).json(underReviewProjects.map(ProjectDTO.toResponse));
+    } catch (error) {
+      
+    }
+  },
+
+  /**
+   * Approves a project.
+   * @param {Object} req - The HTTP request object containing the project ID in the params.
+   * @param {Object} res - The HTTP response object.
+   * @returns {Promise<void>} - Responds with a success message and the approved project, or an error message.
+   * @throws {Error} If there is an issue approving the project.
+   */
+  async approveProject(req, res) {
+    try {
+      const { project_id } = req.params;
+      const approvedProject = await ProjectService.approveProject(project_id);
+      if (!approvedProject) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+      return res.status(200).json({ message: 'Project approved successfully', project: approvedProject });
+    } catch (error) {
+      
+    }
+  },
+
+  /**
+   * Rejects a project by its ID.
+   * @param {Object} req - The HTTP request object containing the project ID in the params.
+   * @param {Object} res - The HTTP response object.
+   * @returns {Promise<void>} - Responds with a success message and the rejected project, or an error message.
+   * @throws {Error} If there is an issue rejecting the project.
+   */
+  async rejectProject(req, res) {
+    try {
+      const { project_id } = req.params;
+      const rejectedProject = await ProjectService.rejectProject(project_id);
+      if (!rejectedProject) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+      return res.status(200).json({ message: 'Project rejected successfully' });
+    } catch (error) {
+      
+    }
+  }
 };
 
 module.exports = ProjectController;

@@ -73,6 +73,45 @@ const ProjectService = {
    */
   async getProjectsForUser(userId) {
     return await ProjectDAO.getUserProjects(userId);
+  },
+
+  /**
+   * Retrieves all projects that contain a specific field.
+   * @param {string} field - The name of the field to search for.
+   * @returns {Promise<Project[]>} - A list of projects containing the given field.
+   * @throws {Error} If an error occurs while fetching the projects.
+   */
+  async getProjectsByField(field) {
+    return await ProjectDAO.getProjectsByField(field);
+  },
+
+  /**
+   * Retrieves all projects that are under review.
+   * @returns {Promise<Project[]>} - A list of projects with 'pending' approval status.
+   * @throws {Error} If an error occurs while fetching the projects.
+   */
+  async getUnderReviewProjects() {
+    return await ProjectDAO.getUnderReviewProjects();
+  },
+
+  /**
+   * Approves a project by updating its approval status to 'approved'.
+   * @param {string} projectId - The ID of the project to be approved.
+   * @returns {Promise<Project>} - The approved project document.
+   * @throws {Error} - If an error occurs while approving the project.
+   */
+  async approveProject(projectId) {
+    return await ProjectDAO.approveProject(projectId);
+  },
+
+  /**
+   * Rejects a project by updating its approval status to 'rejected'.
+   * @param {string} projectId - The ID of the project to be rejected.
+   * @returns {Promise<Project>} - The rejected project document.
+   * @throws {Error} - If an error occurs while rejecting the project.
+   */
+  async rejectProject(projectId) {
+    return await ProjectDAO.rejectProject(projectId);
   }
 };
 
