@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Project = require('../db/models/projectModel');
 
-const dbURI = "mongodb+srv://ashrafmarwa:FOjGk3LQgMZeXeae@innovestdb.xrabm.mongodb.net/?retryWrites=true&w=majority&appName=innovestDB";
+const dbURI = "mongodb://localhost:27017/Innovest";
 
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
