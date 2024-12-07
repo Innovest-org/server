@@ -13,7 +13,11 @@ const projectSchema = new mongoose.Schema({
     default: 'under review', 
     required: true 
     },
-  approved: { type: Boolean, default: false },
+    approved: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending'
+    },
   visibility: { type: Boolean, default: false },
   field: { type: String, required: true },
   budget: { type: Number, required: true },

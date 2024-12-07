@@ -5,8 +5,8 @@ const checkOwnership = (model, isField) => {
     try {
       const userId = req.user.id;
       const resourceId = req.params.id;
-      console.log('User ID:', userId);
-      console.log('Resource ID:', resourceId);
+      // console.log('User ID:', userId);
+      // console.log('Resource ID:', resourceId);
 
 
       // Fetch the resource from the database

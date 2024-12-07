@@ -19,8 +19,8 @@ const Verify = () => {
                 return res.status(401).json({ message: 'Unauthorized: No user found' });
             }
 
-            req.user = decoded.user;  // Attach the decoded user to the request object
-            console.log('Decoded token:', decoded);  // Log the decoded token
+            req.user = decoded.user; 
+            // console.log('Decoded token:', decoded);
 
             return next();
         } catch (error) {
