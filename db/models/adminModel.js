@@ -40,7 +40,6 @@ const AdminSchema = new Schema(
   { timestamps: true },
 );
 
-// Optionally, you can prevent _id from showing up in JSON responses
 AdminSchema.set('toJSON', {
   transform: function (doc, ret) {
     delete ret._id; // Remove _id from the response
@@ -48,8 +47,7 @@ AdminSchema.set('toJSON', {
   }
 });
 
-// Set admin_id as the document identifier
-AdminSchema.index({ admin_id: 1 }); // Optional: For faster lookups
+AdminSchema.index({ admin_id: 1 }); // For faster lookups
 
 const Admin = mongoose.model('Admin', AdminSchema);
 module.exports = Admin;
