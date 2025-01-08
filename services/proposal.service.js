@@ -2,17 +2,17 @@ const ProposalDAO = require('../common/daos/proposal.dao');
 
 
 class ProposalService {
-  async createProposal(proposalData, userId) {
-    return await ProposalDAO.createProposal(proposalData, userId);
+  async createProposal(proposalData, entrepreneurId) {
+    return await ProposalDAO.createProposal(proposalData, entrepreneurId);
   }
 
-  async getProposalsByEntrepreneur(entrepreneurId) {
-    return ProposalDAO.getProposalsByEntrepreneur(entrepreneurId);
+  async getProposalsByEntrepreneur(entrepreneurId, pagination) {
+    return ProposalDAO.getProposalByEntrepreneur(entrepreneurId);
   }
 
-  async getProposalsByProjects(projectId) {
-    return ProposalDAO.getProposalsByProjects(projectId);
-  }
+  // async getProposalsByProjects(projectId, pagination) {
+  //   return ProposalDAO.getProposalsByProjects(projectId);
+  // }
 
   async getProposalById(proposalId) {
     return ProposalDAO.getProposalById(proposalId);
@@ -32,4 +32,4 @@ class ProposalService {
   }
 };
 
-module.exports = ProposalService;
+module.exports = new ProposalService();

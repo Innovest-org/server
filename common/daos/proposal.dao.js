@@ -1,12 +1,11 @@
-const Proposal = require('../../db/models/proposal.model');
+const {Proposal, ProposalRecipient} = require('../../db/models/proposal.model');
 
 const ProposalDAO = {
   
-  async createProposal(proposalData) {
-    console.log(proposalData);
+  async createProposal(proposalData, entrepreneurId) {
+    console.log('proposal', proposalData);
     try {
-      const proposal = new Proposal({ ...proposalData });
-      console.log(proposal);
+      const proposal = new Proposal({ ...proposalData, entrepreneur_id: entrepreneurId });
       return await proposal.save();
     } catch (error) {
       console.log('Error creating proposal: ' + error);
@@ -18,9 +17,16 @@ const ProposalDAO = {
     try {
       const { page = 1, limit = 10 } = pagination;
       const skip = (page - 1) * limit;
-      return await Proposal.find({ entrepreneur_id: entrepreneurId })
+      const totalItems = await Proposal.countDocuments({ entrepreneur_id: entrepreneurId });
+      const proposals = await Proposal.find({ entrepreneur_id: entrepreneurId })
       .skip(skip)
       .limit(limit);
+      return {
+        totalItems,
+        currentPage: page,
+        totalPages: Math.ceil(totalItems / limit),
+        proposals,
+      };
     } catch (error) {
       console.error(
         `Error in getProposalsByEntrepreneur DAO for entrepreneurId: ${entrepreneurId}`,
@@ -30,18 +36,26 @@ const ProposalDAO = {
     }
   },
 
-  async getProposalByProjects(projectId, pagination = {}) {
-    try {
-      const { page = 1, limit = 10 } = pagination;
-      const skip = (page - 1) * limit;
-      return await Proposal.find({ project_id: projectId })
-      .skip(skip)
-      .limit(limit);
-    } catch (error) {
-      console.log('Error getting proposal: ' + error);
-      throw new Error('Unable to get proposal');
-    }
-  },
+  // async getProposalByProjects(projectId, pagination = {}) {
+  //   try {
+  //     const { page = 1, limit = 10 } = pagination;
+  //     const skip = (page - 1) * limit;
+  //     const totalItems = await Proposal.countDocuments({ project_id: projectId });
+  //     const proposals = await Proposal.find({ project_id: projectId })
+  //     .skip(skip)
+  //     .limit(limit);
+
+  //     return {
+  //       totalItems,
+  //       currentPage: page,
+  //       totalPages: Math.ceil(totalItems / limit),
+  //       proposals,
+  //     }
+  //   } catch (error) {
+  //     console.log('Error getting proposal: ' + error);
+  //     throw new Error('Unable to get proposal');
+  //   }
+  // },
 
   async getProposalById(proposalId) {
     try {
@@ -49,6 +63,16 @@ const ProposalDAO = {
     } catch (error) {
       console.log('Error getting proposal: ' + error);
       throw new Error('Unable to get proposal');
+    }
+  },
+
+  async sendProposal(proposalId, investorId) {
+    try {
+      const recipient = await ProposalRecipient.create({ proposal_id: proposalId, investor_id: investorId });
+      return recipient.save();
+      
+    } catch (error) {
+      res.status(500).json({ message: 'Error sending proposal' });
     }
   },
 
@@ -88,4 +112,4 @@ const ProposalDAO = {
   },
 };
 
-exports.ProposalDAO = ProposalDAO;
+module.exports = ProposalDAO;

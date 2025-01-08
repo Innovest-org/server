@@ -2,9 +2,8 @@ class proposalDTO {
   static fromRequest(proposalData){
     return {
       project_id: proposalData.project_id,
-      investor_id: proposalData.investor_id,
       title: proposalData.title,
-      amount_requested: proposalDataData.amount,
+      amount: proposalData.amount,
       milestones: proposalData.milestones,
       benefits: proposalData.benefits,
       terms: proposalData.terms,
@@ -14,10 +13,10 @@ class proposalDTO {
 
   static toResponse(proposalData) {
     return {
+      proposal_id: proposalData.proposal_id,
       project_id: proposalData.project_id,
-      investor_id: proposalData.investor_id,
       title: proposalData.title,
-      amount: proposalData.amount_requested,
+      amount: proposalData.amount,
       milestones: proposalData.milestones,
       benefits: proposalData.benefits,
       terms: proposalData.terms,

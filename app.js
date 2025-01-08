@@ -12,6 +12,7 @@ const socketConfig = require('./config/socket');
 const commentModule = require("./modules/comment.module");
 const { addUserToPendingUsers, approveUserToJoinCommunity } = require('./controllers/community.controller');
 const ProjectModule = require('./modules/project.module');
+const proposalModule = require("./modules/proposal.module");
 
 
 
@@ -49,6 +50,7 @@ app.use('/api', userModule());
 app.use('/api', likeModule());
 app.use('/api', commentModule());
 app.use('/api', ProjectModule());
+app.use('/api', proposalModule());
 
 // Socket.IO setup
 io.on('connection', (socket) => {
