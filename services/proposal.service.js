@@ -1,35 +1,77 @@
 const ProposalDAO = require('../common/daos/proposal.dao');
 
-
 class ProposalService {
   async createProposal(proposalData, entrepreneurId) {
-    return await ProposalDAO.createProposal(proposalData, entrepreneurId);
+    try {
+      return await ProposalDAO.createProposal(proposalData, entrepreneurId);
+    } catch (error) {
+      console.error('Error creating proposal:', error);
+      throw error;
+    }
   }
 
   async getProposalsByEntrepreneur(entrepreneurId, pagination) {
-    return ProposalDAO.getProposalByEntrepreneur(entrepreneurId);
+    try {
+      return await ProposalDAO.getProposalByEntrepreneur(entrepreneurId);
+    } catch (error) {
+      console.error('Error fetching proposals by entrepreneur:', error);
+      throw error;
+    }
   }
 
   // async getProposalsByProjects(projectId, pagination) {
-  //   return ProposalDAO.getProposalsByProjects(projectId);
+  //   try {
+  //     return await ProposalDAO.getProposalsByProjects(projectId);
+  //   } catch (error) {
+  //     console.error('Error fetching proposals by project:', error);
+  //     throw error;
+  //   }
   // }
 
-  async getProposalById(proposalId) {
-    return ProposalDAO.getProposalById(proposalId);
+  async sendProposalToInvestors(proposalId) {
+    try {
+      return await ProposalDAO.sendProposalToInvestors(proposalId);
+    } catch (error) {
+      console.error('Error sending proposal to investors:', error);
+      throw error;
+    }
   }
 
+  async getProposalById(proposalId) {
+    try {
+      return await ProposalDAO.getProposalById(proposalId);
+    } catch (error) {
+      console.error('Error fetching proposal by ID:', error);
+      throw error;
+    }
+  }
 
   async updateProposal(proposalId, updateData) {
-    return await ProposalDAO.updateProposal(proposalId, updateData);
+    try {
+      return await ProposalDAO.updateProposal(proposalId, updateData);
+    } catch (error) {
+      console.error('Error updating proposal:', error);
+      throw error;
+    }
   }
 
   async updateProposalStatus(proposalId, status) {
-    return await ProposalDAO.updateProposalStatus(proposalId, status);
+    try {
+      return await ProposalDAO.updateProposalStatus(proposalId, status);
+    } catch (error) {
+      console.error('Error updating proposal status:', error);
+      throw error;
+    }
   }
 
   async deleteProposal(proposalId) {
-    return await ProposalDAO.deleteProposal(proposalId);
+    try {
+      return await ProposalDAO.deleteProposal(proposalId);
+    } catch (error) {
+      console.error('Error deleting proposal:', error);
+      throw error;
+    }
   }
-};
+}
 
 module.exports = new ProposalService();

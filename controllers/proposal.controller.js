@@ -71,6 +71,27 @@ class ProposalController {
       res.status(500).json({ message: 'Server Error' });
     }
   }
+
+  async sendProposalToInvestors(req, res) {
+    try {
+      const { proposal_id } = req.params;
+      const {investor_ids} = req.body;
+
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const investorsToSend = Array.isArray(investor_ids) ? investor_ids : [investor_ids];
+
+      await ProposalService.sendProposalToInvestors(proposal_id, investorsToSend);
+
+      res.status(200).json({ message: 'Proposal sent to investors successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server Error' });
+    }
+  }
 }
 
 module.exports = new ProposalController();
