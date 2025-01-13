@@ -71,7 +71,6 @@ class ProposalController {
         totalItems: result.totalItems,
         currentPage: result.currentPage,
         totalPages: result.totalPages,
-        limit: pagination.limit || 10,
         proposals: result.proposals.map(proposal => (proposal)),
       })
     } catch (error) {
