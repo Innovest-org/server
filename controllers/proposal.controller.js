@@ -58,6 +58,29 @@ class ProposalController {
     }
   }
 
+  async getProposalsForInvestor(req, res) {
+    try {
+      const investor_id = req.user.id;
+      const pagination = JSON.parse(req.query.pagination || '{}');
+      console.log('investor_id:', investor_id);
+
+      const result = await ProposalService.getProposalsForInvestor(investor_id, pagination);
+      console.log('result:', result);
+
+      res.status(200).json({
+        totalItems: result.totalItems,
+        currentPage: result.currentPage,
+        totalPages: result.totalPages,
+        limit: pagination.limit || 10,
+        proposals: result.proposals.map(proposal => (proposal)),
+      })
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server Error' });
+      
+    }
+  }
+
   async getProposalById(req, res) {
     try {
       const {proposal_id} = req.params;

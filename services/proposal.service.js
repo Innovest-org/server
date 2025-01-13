@@ -36,6 +36,14 @@ class ProposalService {
       throw error;
     }
   }
+  async getProposalsForInvestor(investorId, pagination) {
+    try {
+      return await ProposalDAO.getProposalsForInvestor(investorId, pagination);
+    } catch (error) {
+      console.error('Error in ProposalService.getProposalsForInvestor:', error);
+      throw error;
+    }
+  }
 
   async getProposalById(proposalId) {
     try {

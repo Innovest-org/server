@@ -9,6 +9,11 @@ router.post('/',
   AuthMiddleware(),
   ProposalController.createProposal);
 
+// Get proposals by investor
+router.get('/investor_proposals',
+  AuthMiddleware(),
+  ProposalController.getProposalsForInvestor);
+
 // Get proposals by entrepreneur
 router.get('/',
   AuthMiddleware(),
@@ -23,5 +28,7 @@ router.post('/:proposal_id/send_to_investors',
   AuthMiddleware(),
   body('investor_ids').exists().withMessage('Investor ids are required'),
   ProposalController.sendProposalToInvestors);
+
+
 
 module.exports = router;
