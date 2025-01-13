@@ -75,7 +75,7 @@ class ProposalController {
   async sendProposalToInvestors(req, res) {
     try {
       const { proposal_id } = req.params;
-      const {investor_ids} = req.body;
+      const { investor_ids } = req.body;
 
       const errors = validationResult(req);
       if (!errors.isEmpty()) {

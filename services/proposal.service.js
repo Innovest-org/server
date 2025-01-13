@@ -12,7 +12,7 @@ class ProposalService {
 
   async getProposalsByEntrepreneur(entrepreneurId, pagination) {
     try {
-      return await ProposalDAO.getProposalByEntrepreneur(entrepreneurId);
+      return await ProposalDAO.getProposalByEntrepreneur(entrepreneurId, pagination);
     } catch (error) {
       console.error('Error fetching proposals by entrepreneur:', error);
       throw error;
@@ -28,9 +28,9 @@ class ProposalService {
   //   }
   // }
 
-  async sendProposalToInvestors(proposalId) {
+  async sendProposalToInvestors(proposalId, investorIds) {
     try {
-      return await ProposalDAO.sendProposalToInvestors(proposalId);
+      return await ProposalDAO.sendProposalToInvestors(proposalId, investorIds);
     } catch (error) {
       console.error('Error sending proposal to investors:', error);
       throw error;

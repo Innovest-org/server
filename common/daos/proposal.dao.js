@@ -1,6 +1,7 @@
 const {Proposal, ProposalRecipient} = require('../../db/models/proposal.model');
 const { PROPOSAL_RECIPIENT_STATUS } = require('../../db/models/constants');
-const { sendEmail } = require('../utils/email.utils');  
+const {User} = require('../../db/models/userModel');
+const {sendEmail} = require('../../utils/email.utils');  
 
 const ProposalDAO = {
   
@@ -18,7 +19,7 @@ const ProposalDAO = {
 
   async sendProposalToInvestors(proposal_id, investor_ids) {
     try {
-      const proposal = await Proposal.findById(proposal_id);
+      const proposal = await Proposal.findOne({proposal_id :proposal_id});
       if (!proposal) {
         throw new Error('Proposal not found');
       }
@@ -29,6 +30,7 @@ const ProposalDAO = {
       }));
 
       const createdRecipients = await ProposalRecipient.insertMany(recipients);
+
   
       // Call sendEmailToInvestors to send email after inserting recipients
       await this.sendEmailToInvestors(createdRecipients);
@@ -41,19 +43,23 @@ const ProposalDAO = {
   },
   
   async sendEmailToInvestors(recipients) {
+    console.log('recipients', recipients);
     try {
       if (!recipients || recipients.length === 0) {
         throw new Error('No recipients found');
       }
   
-      const proposal = await Proposal.findById(recipients[0].proposal_id);  // Assuming all recipients belong to the same proposal
+      const proposal = await Proposal.findOne({proposal_id : recipients[0].proposal_id});  // Assuming all recipients belong to the same proposal
       if (!proposal) {
         throw new Error('Proposal not found');
       }
+
+      const entrepreneur = await User.findOne({id: proposal.entrepreneur_id});
+      console.log('entrepreneur', entrepreneur);
   
       // Fetch all investor emails in a single query for performance
       const investorIds = recipients.map(recipient => recipient.investor_id);
-      const investors = await UserActivation.find({ id: { $in: investorIds } });
+      const investors = await User.find({ id: { $in: investorIds } });
   
       /**
        * 
@@ -69,8 +75,8 @@ const ProposalDAO = {
         const investorEmail = investorMap[recipient.investor_id];
         if (investorEmail) {
           const subject = `New Proposal Sent to You: ${proposal.title}`;
-          const text = `You have received a new proposal titled "${proposal.title}" from an entrepreneur. Please review it as soon as possible.`;
-          const html = `<p>You have received a new proposal titled <strong>"${proposal.title}"</strong> from an entrepreneur. Please review it as soon as possible.</p>`;
+          const text = `You have received a new proposal titled "${proposal.title}" from an "${entrepreneur.username}". Please review it as soon as possible.`;
+          const html = `<p>You have received a new proposal titled <strong>"${proposal.title}"</strong> from an "${entrepreneur.username}". Please review it as soon as possible.</p>`;
 
           await sendEmail(investorEmail, subject, text, html);
         }
