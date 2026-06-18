@@ -178,7 +178,6 @@ const ProjectController = {
         return res.status(404).json({ message: 'No projects found' });
       }
   
-      // Assuming ProjectDTO.toResponse formats the project data correctly
       return res.status(200).json(projects.map(ProjectDTO.toResponse));
     } catch (error) {
       console.error('Error in getProjectsByField:', error);
